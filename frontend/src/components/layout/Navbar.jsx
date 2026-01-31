@@ -144,11 +144,11 @@ function Navbar() {
                 )}
 
                 {/* Cart */}
-                <Link to="/cart" className="relative hover:text-blue-600 dark:text-dark-text dark:hover:text-blue-400">
+                <Link to="/cart" className="relative inline-flex items-center hover:text-blue-600 dark:text-dark-text dark:hover:text-blue-400">
                   <ShoppingCart size={24} />
                   {totalItems > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                      {totalItems}
+                    <span className="absolute -top-3 -right-3 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                      {totalItems > 99 ? '99+' : totalItems}
                     </span>
                   )}
                 </Link>
