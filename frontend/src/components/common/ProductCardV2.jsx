@@ -1,10 +1,11 @@
 import { motion } from 'framer-motion'
-import { Heart, Eye, ShoppingCart, Star, Zap } from 'lucide-react'
+import { Heart, Eye, ShoppingCart, Star, Zap, Scale } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import useCartStore from '../../store/cartStore'
 import useFavoriteStore from '../../store/favoriteStore'
 import useAuthStore from '../../store/authStore'
+import useComparisonStore from '../../store/comparisonStore'
 import QuickViewModal from './QuickViewModal'
 
 function ProductCardV2({ product, index = 0 }) {
@@ -15,8 +16,10 @@ function ProductCardV2({ product, index = 0 }) {
   const { addItem } = useCartStore()
   const { toggleFavorite, isFavorite } = useFavoriteStore()
   const { isAuthenticated } = useAuthStore()
+  const { addToComparison, isInComparison } = useComparisonStore()
   
   const favorite = isFavorite(product._id)
+  const inComparison = isInComparison(product._id)
 
   const handleAddToCart = (e) => {
     e.preventDefault()
@@ -126,11 +129,29 @@ function ProductCardV2({ product, index = 0 }) {
                 whileTap={{ scale: 0.9 }}
                 onClick={(e) => {
                   e.preventDefault()
-                  setShowQuickView(true) // YENİ
+                  setShowQuickView(true)
                 }}
                 className="p-3 bg-white/90 dark:bg-gray-700/90 rounded-full backdrop-blur-md hover:bg-blue-500 hover:text-white transition-all shadow-lg text-gray-700 dark:text-gray-200"
               >
                 <Eye size={20} />
+              </motion.button>
+
+              {/* COMPARISON BUTTON */}
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={(e) => {
+                  e.preventDefault()
+                  addToComparison(product)
+                }}
+                className={`p-3 rounded-full backdrop-blur-md transition-all shadow-lg ${
+                  inComparison
+                    ? 'bg-purple-500 text-white'
+                    : 'bg-white/90 dark:bg-gray-700/90 text-gray-700 dark:text-gray-200 hover:bg-purple-500 hover:text-white'
+                }`}
+                title="Karşılaştır"
+              >
+                <Scale size={20} />
               </motion.button>
             </div>
 
