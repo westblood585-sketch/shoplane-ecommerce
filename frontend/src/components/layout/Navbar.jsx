@@ -1,12 +1,13 @@
 import { Link } from 'react-router-dom'
-import { ShoppingCart, User, LogOut, Menu, X } from 'lucide-react'
+import { ShoppingCart, User, LogOut, Menu, X, Camera } from 'lucide-react'
 import useCartStore from '../../store/cartStore'
 import useAuthStore from '../../store/authStore'
 import { useState } from 'react'
 import MobileMenu from './MobileMenu'
 import SmartSearch from '../common/SmartSearch'
 import MegaMenu from './MegaMenu'
-import DarkModeToggle from '../common/DarkModeToggle' // YENİ
+import DarkModeToggle from '../common/DarkModeToggle'
+import VisualSearch from '../search/VisualSearch'
 
 function Navbar() {
   const { getTotalItems } = useCartStore()
@@ -14,6 +15,7 @@ function Navbar() {
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [showMobileSearch, setShowMobileSearch] = useState(false)
+  const [showVisualSearch, setShowVisualSearch] = useState(false)
   
   const totalItems = getTotalItems()
 
@@ -43,8 +45,16 @@ function Navbar() {
               </Link>
 
               {/* Desktop Smart Search */}
-              <div className="hidden md:flex flex-1 max-w-xl mx-4">
+              <div className="hidden md:flex flex-1 max-w-xl mx-4 gap-2">
                 <SmartSearch />
+                {/* Visual Search Button */}
+                <button
+                  onClick={() => setShowVisualSearch(true)}
+                  className="p-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:shadow-lg transition flex-shrink-0"
+                  title="Görsel Arama"
+                >
+                  <Camera size={20} />
+                </button>
               </div>
 
               {/* Right Side Icons */}
@@ -157,6 +167,9 @@ function Navbar() {
 
       {/* Mobile Menu */}
       <MobileMenu isOpen={isMobileMenuOpen} setIsOpen={setIsMobileMenuOpen} />
+
+      {/* Visual Search Modal */}
+      <VisualSearch isOpen={showVisualSearch} onClose={() => setShowVisualSearch(false)} />
 
       {/* Mobile Search Modal */}
       {showMobileSearch && (
