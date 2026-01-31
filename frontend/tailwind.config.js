@@ -1,0 +1,34 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  darkMode: 'class',
+  theme: {
+    extend: {
+      screens: {
+        'xs': '475px',
+        'sm': '640px',
+        'md': '768px',
+        'lg': '1024px',
+        'xl': '1280px',
+        '2xl': '1536px',
+      },
+      spacing: {
+        'safe-top': 'env(safe-area-inset-top)',
+        'safe-bottom': 'env(safe-area-inset-bottom)',
+      },
+      colors: {
+        dark: {
+          bg: '#0f172a',
+          card: '#1e293b',
+          hover: '#334155',
+          border: '#475569',
+          text: '#e2e8f0'
+        }
+      }
+    },
+  },
+  plugins: [],
+}

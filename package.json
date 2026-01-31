@@ -1,0 +1,18 @@
+{
+  "scripts": {
+    "start": "concurrently \"npm --prefix backend start\" \"npm --prefix frontend run dev\"",
+    "backend": "npm --prefix backend start",
+    "frontend": "npm --prefix frontend run dev",
+    "dev": "concurrently \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\""
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "socket.io-client": "^4.8.3",
+    "swiper": "^12.0.3"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "vite": "^7.3.1"
+  }
+}

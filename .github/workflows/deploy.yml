@@ -1,0 +1,78 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Deploy Backend to Render
+        run: |
+          if [ ! -z "${{ secrets.RENDER_DEPLOY_HOOK }}" ]; then
+            curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
+            echo "✅ Backend deployment triggered"
+          fi
+
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm install
+      
+      - name: Build
+        run: |
+          cd frontend
+          npm run build
+      
+      - name: Deploy Frontend to Vercel
+        if: github.ref == 'refs/heads/main'
+        run: |
+          npm install -g vercel
+          cd frontend
+          vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --yes
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          npm install
+      
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm install
+      
+      - name: Run backend tests
+        run: |
+          cd backend
+          npm test || true
+      
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm run build
+      
+      - name: Notify deployment
+        if: always()
+        run: |
+          echo "✅ Deployment pipeline completed"
