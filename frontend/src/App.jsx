@@ -29,6 +29,7 @@ import ComparePage from './pages/Compare/ComparePage'
 import ComparisonFloatingButton from './components/comparison/ComparisonFloatingButton'
 import ChatWidget from './components/Chat/ChatWidget'
 import GamificationProfile from './components/gamification/GamificationProfile'
+import PurchaseGiftCard from './pages/GiftCard/PurchaseGiftCard'
 
 function App() {
   const { fetchUser, token, isAuthenticated } = useAuthStore()
@@ -149,6 +150,7 @@ function App() {
             <Route path="orders" element={<AdminOrdersPage />} />
           </Route>
           <Route path="/compare" element={<ComparePage />} />
+          <Route path="/gift-cards/purchase" element={<PurchaseGiftCard />} />
         </Routes>
 
         <ComparisonFloatingButton />
