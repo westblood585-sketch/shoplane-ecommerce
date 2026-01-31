@@ -317,3 +317,55 @@ exports.resetPassword = async (req, res, next) => {
     next(error)
   }
 }
+
+// @desc    Social Login (Google, Facebook, Apple)
+// @route   POST /api/auth/social-login
+// @access  Public
+exports.socialLogin = async (req, res, next) => {
+  try {
+    const { provider, uid, email, name, avatar } = req.body
+
+    // Validate
+    if (!provider || !uid || !email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Provider, UID ve email gerekli'
+      })
+    }
+
+    // Kullanıcıyı email'e göre bul
+    let user = await User.findOne({ email })
+
+    if (!user) {
+      // Yeni kullanıcı oluştur
+      user = await User.create({
+        name: name || email.split('@')[0],
+        email,
+        password: Math.random().toString(36).slice(-8) + uid.slice(-8), // Random password
+        phone: '0000000000', // Placeholder
+        avatar: avatar || '',
+        socialAuth: {
+          [provider]: uid
+        }
+      })
+    } else {
+      // Mevcut kullanıcıya social auth bilgisi ekle
+      if (!user.socialAuth) {
+        user.socialAuth = {}
+      }
+      user.socialAuth[provider] = uid
+      
+      // Avatar yoksa güncelle
+      if (!user.avatar && avatar) {
+        user.avatar = avatar
+      }
+      
+      await user.save()
+    }
+
+    // Token gönder
+    sendToken(user, 200, res)
+  } catch (error) {
+    next(error)
+  }
+}

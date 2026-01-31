@@ -5,6 +5,7 @@ const {
   login,
   logout,
   googleLogin,
+  socialLogin,
   getMe,
   updateProfile,
   changePassword,
@@ -17,6 +18,7 @@ const { protect } = require('../middleware/auth')
 router.post('/register', register)
 router.post('/login', login)
 router.post('/google-login', googleLogin)
+router.post('/social-login', socialLogin)
 router.post('/forgot-password', forgotPassword)
 router.put('/reset-password/:resetToken', resetPassword)
 

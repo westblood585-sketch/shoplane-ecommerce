@@ -32,6 +32,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  // SOCIAL AUTH
+  socialAuth: {
+    google: String,
+    facebook: String,
+    apple: String
+  },
   isActive: {
     type: Boolean,
     default: true
