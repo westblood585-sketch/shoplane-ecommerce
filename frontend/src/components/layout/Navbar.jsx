@@ -93,10 +93,10 @@ function Navbar() {
             </motion.div>
 
             {/* RIGHT SECTION - Actions */}
-            <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+            <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
               
               {/* Dark Mode - Premium Toggle */}
-              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="p-1">
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="p-2.5 hover:bg-gradient-to-br hover:from-gray-100 hover:to-gray-50 dark:hover:from-gray-800 dark:hover:to-gray-900 rounded-xl transition-all duration-300">
                 <DarkModeToggle />
               </motion.div>
 
@@ -236,7 +236,7 @@ function Navbar() {
               ) : (
                 <Link 
                   to="/login" 
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white hover:shadow-lg transition-all duration-300 text-sm font-bold shadow-md"
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white hover:shadow-lg transition-all duration-300 text-sm font-bold shadow-md whitespace-nowrap"
                 >
                   <User size={18} />
                   <span className="hidden sm:block">Giriş</span>
@@ -244,10 +244,10 @@ function Navbar() {
               )}
 
               {/* Shopping Cart - Premium Badge */}
-              <motion.div whileHover={{ scale: 1.12 }} whileTap={{ scale: 0.95 }} className="p-1">
+              <motion.div whileHover={{ scale: 1.12 }} whileTap={{ scale: 0.95 }} className="p-2.5 hover:bg-gradient-to-br hover:from-orange-50 hover:to-red-50 dark:hover:from-orange-900/20 dark:hover:to-red-900/20 rounded-xl transition-all duration-300">
                 <Link 
                   to="/cart" 
-                  className="relative p-2.5 hover:bg-gradient-to-br hover:from-orange-50 hover:to-red-50 dark:hover:from-orange-900/20 dark:hover:to-red-900/20 rounded-xl transition-all duration-300 group"
+                  className="relative p-0 hover:opacity-80 transition-all duration-300 group"
                   aria-label="Sepet"
                 >
                   <ShoppingCart size={22} className="dark:text-dark-text text-gray-800 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors" />
