@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
-
+import SocialLogin from '../../components/auth/SocialLogin'
 import useAuthStore from '../../store/authStore'
 
 function LoginPage() {
@@ -151,6 +151,9 @@ function LoginPage() {
               {loading ? 'Giriş Yapılıyor...' : 'Giriş Yap'}
             </button>
           </form>
+
+          {/* Social Login */}
+          <SocialLogin />
 
           {/* Register Link */}
           <p className="text-center text-gray-600 mt-6">
