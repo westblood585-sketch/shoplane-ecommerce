@@ -42,15 +42,15 @@ function MegaMenu() {
       featured: {
         title: 'En Çok Satanlar',
         products: [
-          { name: 'iPhone 15 Pro Max', price: '54.999₺', image: 'photo-1678685888221-cda773a3dcdb' },
-          { name: 'MacBook Air M3', price: '48.999₺', image: 'photo-1517336714731-489689fd1ca8' },
-          { name: 'AirPods Pro 2', price: '8.999₺', image: 'photo-1606841837239-c5a1a4a07af7' }
+          { name: 'iPhone 15 Pro Max', price: '54.999₺', image: 'photo-1592286927505-1def25e64eae' },
+          { name: 'MacBook Pro 16"', price: '48.999₺', image: 'photo-1517694712202-14dd9538aa97' },
+          { name: 'Sony WH-1000XM5', price: '8.999₺', image: 'photo-1505740420928-5e560c06d30e' }
         ]
       },
       banner: {
-        title: 'Elektronik Fırsatları',
-        subtitle: '%50\'ye varan indirim',
-        image: 'photo-1607082348824-0a96f2a4b9da'
+        title: 'Teknoloji Merkezi',
+        subtitle: 'Yeni teknolojileri keşfet',
+        image: 'photo-1519389950473-47ba0277781c'
       }
     },
     {
@@ -83,15 +83,15 @@ function MegaMenu() {
       featured: {
         title: 'Trend Ürünler',
         products: [
-          { name: 'Zara Crop Blazer', price: '1.799₺', image: 'photo-1591369822096-ffd140ec948f' },
-          { name: 'H&M Mom Jean', price: '899₺', image: 'photo-1582418702059-97ebafb35d09' },
-          { name: 'Mango Saten Elbise', price: '1.299₺', image: 'photo-1595777457583-95e059d581b8' }
+          { name: 'Premium Blazer', price: '1.799₺', image: 'photo-1552062407-20eeb29dd533' },
+          { name: 'Comfort Jeans', price: '899₺', image: 'photo-1542272604-787c62d465d1' },
+          { name: 'Elegant Dress', price: '1.299₺', image: 'photo-1595777457583-95e059d581b8' }
         ]
       },
       banner: {
-        title: 'Yeni Sezon Koleksiyonu',
-        subtitle: 'İlk alışverişe özel %20 indirim',
-        image: 'photo-1523381210434-271e8be1f52b'
+        title: 'Moda Koleksiyonu',
+        subtitle: 'Yeni sezon stilleri',
+        image: 'photo-1558618666-fcd25c85cd64'
       }
     },
     {
@@ -126,13 +126,13 @@ function MegaMenu() {
         products: [
           { name: 'Nike Air Max 90', price: '4.999₺', image: 'photo-1542291026-7eec264c27ff' },
           { name: 'Adidas Ultraboost', price: '5.999₺', image: 'photo-1608231387042-66d1773070a5' },
-          { name: 'Converse Chuck Taylor', price: '1.899₺', image: 'photo-1607522370275-f14206abe5d3' }
+          { name: 'Classic Sneaker', price: '1.899₺', image: 'photo-1535381455947-6d995f57efc7' }
         ]
       },
       banner: {
-        title: 'Ayakkabı Kampanyası',
-        subtitle: '2 Al 1 Öde fırsatı',
-        image: 'photo-1560769629-975ec94e6a86'
+        title: 'Ayakkabı Dünyası',
+        subtitle: 'Her adıma stabil',
+        image: 'photo-1543163521-9efcc06814cd'
       }
     },
     {
@@ -165,15 +165,15 @@ function MegaMenu() {
       featured: {
         title: 'Öne Çıkanlar',
         products: [
-          { name: 'Ray-Ban Aviator', price: '3.999₺', image: 'photo-1511499767150-a48a237f0083' },
-          { name: 'Michael Kors Çanta', price: '8.999₺', image: 'photo-1590874103328-eac38a683ce7' },
-          { name: 'Casio G-Shock', price: '2.999₺', image: 'photo-1523170335258-f5ed11844a49' }
+          { name: 'Designer Sunglasses', price: '3.999₺', image: 'photo-1527014176246-b3954984cf27' },
+          { name: 'Luxury Handbag', price: '8.999₺', image: 'photo-1548036328-c9fa89d128fa' },
+          { name: 'Premium Watch', price: '2.999₺', image: 'photo-1523293182086-7651a899d37f' }
         ]
       },
       banner: {
-        title: 'Aksesuar İndirimi',
-        subtitle: 'Tüm aksesuarlarda %30 indirim',
-        image: 'photo-1611652022419-a9419f74343d'
+        title: 'Aksesuar Şıklığı',
+        subtitle: 'Tamamlayıcı detaylar',
+        image: 'photo-1556821552-5a0e577edbfe'
       }
     },
     {
@@ -206,15 +206,15 @@ function MegaMenu() {
       featured: {
         title: 'Popüler Ürünler',
         products: [
-          { name: 'Dyson V15 Detect', price: '24.999₺', image: 'photo-1558317374-067fb5f30001' },
-          { name: 'Nespresso Vertuo', price: '4.999₺', image: 'photo-1517668808822-9ebb02f2a0e6' },
-          { name: 'Philips Airfryer XXL', price: '5.999₺', image: 'photo-1585515320310-259814833133' }
+          { name: 'Dyson Vacuum', price: '24.999₺', image: 'photo-1558618666-fcd25c85cd64' },
+          { name: 'Smart Coffee', price: '4.999₺', image: 'photo-1517668808822-9ebb02f2a0e6' },
+          { name: 'Air Fryer XXL', price: '5.999₺', image: 'photo-1585515320310-259814833133' }
         ]
       },
       banner: {
-        title: 'Ev Aletlerinde',
-        subtitle: 'Kış fırsatları başladı',
-        image: 'photo-1556911220-bff31c812dba'
+        title: 'Ev İçin Çözümler',
+        subtitle: 'Konforlu yaşamın başı',
+        image: 'photo-1556909114-f6e7ad7d3136'
       }
     },
     {
@@ -247,14 +247,14 @@ function MegaMenu() {
       featured: {
         title: 'En Çok Tercih Edilenler',
         products: [
-          { name: 'Decathlon Yoga Matı', price: '299₺', image: 'photo-1601925260368-ae2f83cf8b7f' },
-          { name: 'Nike Dambıl Seti', price: '1.899₺', image: 'photo-1517344884509-a0c97ec11bcc' },
-          { name: 'The North Face Çanta', price: '3.299₺', image: 'photo-1622260614153-03223fb72052' }
+          { name: 'Yoga Mat Pro', price: '299₺', image: 'photo-1592476885657-236aa2c3e009' },
+          { name: 'Dumbbell Set', price: '1.899₺', image: 'photo-1540126613408-eca07ce68773' },
+          { name: 'Trekking Bag', price: '3.299₺', image: 'photo-1622260614153-03223fb72052' }
         ]
       },
       banner: {
-        title: 'Spor Ürünlerinde',
-        subtitle: 'Fit ol, sağlıklı yaşa',
+        title: 'Spor & Sağlık',
+        subtitle: 'Aktif yaşamın ortağı',
         image: 'photo-1534438327276-14e5300c3a48'
       }
     },
@@ -288,14 +288,14 @@ function MegaMenu() {
       featured: {
         title: 'Yeni Gelenler',
         products: [
-          { name: 'Estée Lauder Serum', price: '2.999₺', image: 'photo-1556228720-195a672e8a03' },
-          { name: 'Dyson Supersonic', price: '14.999₺', image: 'photo-1522338140262-f46f5913618a' },
-          { name: 'Philips OneBlade', price: '1.599₺', image: 'photo-1503342217505-b0a15ec3261c' }
+          { name: 'Premium Serum', price: '2.999₺', image: 'photo-1556228720-195a672e8a03' },
+          { name: 'Hair Dryer Pro', price: '14.999₺', image: 'photo-1522338140262-f46f5913618a' },
+          { name: 'Beauty Razor', price: '1.599₺', image: 'photo-1556821552-5a0e577edbfe' }
         ]
       },
       banner: {
-        title: 'Kozmetik Fırsatları',
-        subtitle: '3 Al 2 Öde kampanyası',
+        title: 'Güzellik & Bakım',
+        subtitle: 'Doğal güzelliğini artır',
         image: 'photo-1596462502278-27bfdc403348'
       }
     }
