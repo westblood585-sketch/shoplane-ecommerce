@@ -26,9 +26,9 @@ import ProtectedAdminRoute from './components/ProtectedAdminRoute'
 import NotificationToast from './components/common/NotificationToast'
 import FavoritesPage from './pages/Favorites/FavoritesPage'
 import ComparePage from './pages/Compare/ComparePage'
-import CompareFloatingButton from './components/common/CompareFloatingButton'
+import ComparisonFloatingButton from './components/comparison/ComparisonFloatingButton'
 import ChatWidget from './components/Chat/ChatWidget'
-import GamificationProfile from './components/gamification/GamificationProfile' // YENİ
+import GamificationProfile from './components/gamification/GamificationProfile'
 
 function App() {
   const { fetchUser, token, isAuthenticated } = useAuthStore()
@@ -151,7 +151,7 @@ function App() {
           <Route path="/compare" element={<ComparePage />} />
         </Routes>
 
-        <CompareFloatingButton />
+        <ComparisonFloatingButton />
         {/* Chat Widget */}
         <ChatWidget />
         </div>
