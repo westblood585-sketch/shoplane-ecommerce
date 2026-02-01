@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, Zap, TrendingUp, Shield, Truck, CreditCard, Sparkles, Flame, Clock, Eye, ShoppingBag, Users, Heart, Star, Gift } from 'lucide-react'
+import { ArrowRight, Zap, TrendingUp, Shield, Truck, CreditCard, Sparkles, Flame, Clock, Eye, ShoppingBag, Users, Heart, Star, Gift, Package } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useInView } from 'react-intersection-observer'
 import SEO from '../../components/seo/SEO'
@@ -9,7 +9,9 @@ import Footer from '../../components/layout/Footer'
 import BottomNav from '../../components/layout/BottomNav'
 import HeroSectionV2 from '../../components/home/HeroSectionV2'
 import ProductCardV2 from '../../components/common/ProductCardV2'
+import BundleCard from '../../components/bundles/BundleCard'
 import { productAPI } from '../../api/productAPI'
+import API from '../../api/axiosConfig'
 import RecentlyViewed from '../../components/Home/RecentlyViewed' // YENİ
 
 function HomePage() {
@@ -17,6 +19,7 @@ function HomePage() {
   const [newProducts, setNewProducts] = useState([])
   const [flashSaleProducts, setFlashSaleProducts] = useState([])
   const [bestSellerProducts, setBestSellerProducts] = useState([])
+  const [bundles, setBundles] = useState([])
   const [loading, setLoading] = useState(true)
   const [flashSaleTimeLeft, setFlashSaleTimeLeft] = useState({
     hours: 23,
@@ -64,16 +67,18 @@ function HomePage() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const [featured, newest, flashSale, bestSeller] = await Promise.all([
+        const [featured, newest, flashSale, bestSeller, bundlesData] = await Promise.all([
           productAPI.getProducts({ limit: 8, sort: 'popular' }),
           productAPI.getProducts({ limit: 8, sort: 'newest' }),
           productAPI.getProducts({ limit: 6, sort: 'price-asc' }), // Flash sale (ucuz olanlar)
-          productAPI.getProducts({ limit: 8, sort: 'rating' }) // Best sellers
+          productAPI.getProducts({ limit: 8, sort: 'rating' }), // Best sellers
+          API.get('/bundles?active=true')
         ])
         setFeaturedProducts(featured.products)
         setNewProducts(newest.products)
         setFlashSaleProducts(flashSale.products)
         setBestSellerProducts(bestSeller.products)
+        setBundles(bundlesData.data.bundles)
       } catch (error) {
         console.error('Error:', error)
       } finally {
@@ -410,6 +415,47 @@ function HomePage() {
           )}
         </div>
       </section>
+
+      {/* Bundle Deals Section */}
+      {bundles.length > 0 && (
+        <section className="py-20 px-4 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">
+          <div className="max-w-7xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-12"
+            >
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900 rounded-full mb-4">
+                <Package className="text-purple-600 dark:text-purple-400" size={20} />
+                <span className="text-purple-600 dark:text-purple-400 font-semibold">Paket Fırsatları</span>
+              </div>
+              <h2 className="text-4xl md:text-5xl font-bold mb-4 dark:text-dark-text">
+                Birlikte Al, Daha Çok Kazan
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 text-lg">
+                Özel paket fırsatlarında %50'ye varan indirimler
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {bundles.slice(0, 3).map((bundle, index) => (
+                <BundleCard key={bundle._id} bundle={bundle} index={index} />
+              ))}
+            </div>
+
+            <div className="text-center">
+              <Link
+                to="/bundles"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-bold hover:shadow-xl transition-all hover:scale-105"
+              >
+                Tüm Paketleri Gör
+                <ArrowRight size={20} />
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Featured Products */}
       <section ref={featuredRef} className="py-20 px-4 bg-white dark:bg-dark-card transition-colors">
