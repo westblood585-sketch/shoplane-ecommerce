@@ -93,6 +93,7 @@ app.use('/api/addresses', require('./routes/addressRoutes'))
 app.use('/api/favorites', require('./routes/favoriteRoutes'))
 app.use('/api/gamification', require('./routes/gamificationRoutes'))
 app.use('/api/chat', require('./routes/chatRoutes'))
+app.use('/api/bundles', require('./routes/bundleRoutes'))
 // app.use('/api/gift-cards', require('./routes/giftCardRoutes')) // Temporarily disabled
 
 // Review routes (nested)
