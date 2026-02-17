@@ -1,149 +1,203 @@
 const Chat = require('../models/Chat')
-const User = require('../models/User')
 
-// Bot yanıt logic
-function getBotResponse(userMessage) {
-  const msg = userMessage.toLowerCase()
-
-  const responses = {
-    greeting: [
-      'Merhaba! 👋 Size nasıl yardımcı olabilirim?',
-      'Hoş geldiniz! 😊'
-    ],
-    siparis: [
-      'Siparişlerinizi "Siparişlerim" sayfasından takip edebilirsiniz. 📦'
-    ],
-    kargo: [
-      'Genellikle 2-4 iş günü içinde teslimat yapılır. 🚚'
-    ],
-    iade: [
-      '14 gün içinde kullanılmamış ürünler için iade hakkınız bulunmaktadır. 🔄'
-    ],
-    default: [
-      'Üzgünüm, anlayamadım. Daha açık bir şekilde sorabilir misiniz?'
-    ]
-  }
-
-  if (msg.includes('merhaba') || msg.includes('selam')) {
-    return responses.greeting[0]
-  } else if (msg.includes('sipariş') || msg.includes('siparis')) {
-    return responses.siparis[0]
-  } else if (msg.includes('kargo') || msg.includes('teslimat')) {
-    return responses.kargo[0]
-  } else if (msg.includes('iade')) {
-    return responses.iade[0]
-  }
-
-  return responses.default[0]
+// Basit bot yanıtları
+const botResponses = {
+  'merhaba': 'Merhaba! Size nasıl yardımcı olabilirim?',
+  'sipariş': 'Siparişlerinizi "Siparişlerim" sayfasından takip edebilirsiniz.',
+  'kargo': 'Kargo takip numaranız e-posta ile tarafınıza iletilecektir. Genellikle 2-4 iş günü içinde teslimat yapılmaktadır.',
+  'iade': '14 gün içinde kullanılmamış ürünler için iade hakkınız bulunmaktadır.',
+  'ödeme': 'Kredi kartı, banka kartı, havale/EFT ve kapıda ödeme seçenekleri mevcuttur.',
+  'indirim': 'Aktif kampanyalarımız için ana sayfayı ziyaret edebilirsiniz.',
+  'iletişim': 'Bize destek@myshop.com adresinden ulaşabilirsiniz.',
+  'çalışma saatleri': 'Müşteri hizmetlerimiz Pazartesi-Cuma 09:00-18:00 saatleri arasında hizmet vermektedir.',
+  'default': 'Anlayamadım. Lütfen daha açık bir şekilde sorunuzu belirtin veya canlı destek için bekleyin.'
 }
 
-// Sohbet başlat
-exports.startChat = async (req, res) => {
+const getBotResponse = (message) => {
+  const lowerMessage = message.toLowerCase()
+  
+  for (const [keyword, response] of Object.entries(botResponses)) {
+    if (lowerMessage.includes(keyword)) {
+      return response
+    }
+  }
+  
+  return botResponses.default
+}
+
+// @desc    Sohbet başlat veya devam ettir
+// @route   GET /api/chat
+// @access  Private
+exports.getOrCreateChat = async (req, res, next) => {
   try {
-    const chat = new Chat({
-      userId: req.user.id,
-      messages: [{
-        id: Date.now().toString(),
-        sender: 'bot',
-        message: `Merhaba ${req.user.name}! 👋 Size nasıl yardımcı olabilirim?`,
-        timestamp: new Date()
-      }]
+    let chat = await Chat.findOne({ 
+      user: req.user.id,
+      status: { $ne: 'closed' }
+    }).sort({ createdAt: -1 })
+
+    if (!chat) {
+      chat = await Chat.create({
+        user: req.user.id,
+        messages: [{
+          sender: 'bot',
+          message: 'Merhaba! Size nasıl yardımcı olabilirim?'
+        }]
+      })
+    }
+
+    res.status(200).json({
+      success: true,
+      chat
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+// @desc    Mesaj gönder
+// @route   POST /api/chat/message
+// @access  Private
+exports.sendMessage = async (req, res, next) => {
+  try {
+    const { message } = req.body
+
+    let chat = await Chat.findOne({ 
+      user: req.user.id,
+      status: { $ne: 'closed' }
     })
 
-    await chat.save()
-    res.status(201).json({ success: true, chat })
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message })
-  }
-}
-
-// Mesaj gönder
-exports.sendMessage = async (req, res) => {
-  try {
-    const { chatId, message } = req.body
-
-    const chat = await Chat.findById(chatId)
-    if (!chat) return res.status(404).json({ success: false, message: 'Chat not found' })
+    if (!chat) {
+      chat = await Chat.create({
+        user: req.user.id,
+        messages: []
+      })
+    }
 
     // Kullanıcı mesajını ekle
-    const userMessage = {
-      id: Date.now().toString(),
+    chat.messages.push({
       sender: 'user',
-      message,
-      timestamp: new Date()
-    }
-    chat.messages.push(userMessage)
+      message
+    })
 
-    // Bot yanıtı
+    // Bot yanıtı ekle
     const botResponse = getBotResponse(message)
-    const botMessage = {
-      id: (Date.now() + 1).toString(),
+    chat.messages.push({
       sender: 'bot',
-      message: botResponse,
-      timestamp: new Date()
-    }
-    chat.messages.push(botMessage)
+      message: botResponse
+    })
 
-    chat.updatedAt = new Date()
+    chat.lastMessage = Date.now()
     await chat.save()
 
-    res.status(200).json({ 
-      success: true, 
-      userMessage,
-      botMessage,
-      chat 
+    // Socket.io ile gerçek zamanlı güncelleme
+    if (global.io) {
+      global.io.to(`user-${req.user.id}`).emit('new-message', {
+        sender: 'bot',
+        message: botResponse,
+        timestamp: new Date()
+      })
+
+      // Admin'e bildirim
+      global.io.to('admin-room').emit('user-message', {
+        userId: req.user.id,
+        userName: req.user.name,
+        message,
+        chatId: chat._id
+      })
+    }
+
+    res.status(200).json({
+      success: true,
+      chat
     })
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message })
+    next(error)
   }
 }
 
-// Sohbet geçmişi
-exports.getChatHistory = async (req, res) => {
+// @desc    Tüm sohbetleri getir (Admin)
+// @route   GET /api/chat/all
+// @access  Private/Admin
+exports.getAllChats = async (req, res, next) => {
+  try {
+    const chats = await Chat.find()
+      .populate('user', 'name email')
+      .sort({ lastMessage: -1 })
+
+    res.status(200).json({
+      success: true,
+      count: chats.length,
+      chats
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+// @desc    Admin mesaj gönder
+// @route   POST /api/chat/:chatId/admin-message
+// @access  Private/Admin
+exports.sendAdminMessage = async (req, res, next) => {
+  try {
+    const { message } = req.body
+    const chat = await Chat.findById(req.params.chatId)
+
+    if (!chat) {
+      return res.status(404).json({
+        success: false,
+        message: 'Sohbet bulunamadı'
+      })
+    }
+
+    chat.messages.push({
+      sender: 'admin',
+      message
+    })
+
+    chat.assignedTo = req.user.id
+    chat.lastMessage = Date.now()
+    await chat.save()
+
+    // Kullanıcıya bildirim
+    if (global.io) {
+      global.io.to(`user-${chat.user}`).emit('new-message', {
+        sender: 'admin',
+        message,
+        timestamp: new Date()
+      })
+    }
+
+    res.status(200).json({
+      success: true,
+      chat
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+// @desc    Sohbeti kapat
+// @route   PUT /api/chat/:chatId/close
+// @access  Private/Admin
+exports.closeChat = async (req, res, next) => {
   try {
     const chat = await Chat.findById(req.params.chatId)
-    if (!chat) return res.status(404).json({ success: false, message: 'Chat not found' })
 
-    res.status(200).json({ success: true, chat })
+    if (!chat) {
+      return res.status(404).json({
+        success: false,
+        message: 'Sohbet bulunamadı'
+      })
+    }
+
+    chat.status = 'closed'
+    await chat.save()
+
+    res.status(200).json({
+      success: true,
+      message: 'Sohbet kapatıldı'
+    })
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message })
-  }
-}
-
-// Tüm sohbetler
-exports.getUserChats = async (req, res) => {
-  try {
-    const chats = await Chat.find({ userId: req.user.id })
-      .sort({ createdAt: -1 })
-      .limit(10)
-
-    res.status(200).json({ success: true, chats })
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message })
-  }
-}
-
-// Sohbet kapat
-exports.closeChat = async (req, res) => {
-  try {
-    const chat = await Chat.findByIdAndUpdate(
-      req.params.chatId,
-      { status: 'closed' },
-      { new: true }
-    )
-
-    res.status(200).json({ success: true, chat })
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message })
-  }
-}
-
-// Sohbet sil
-exports.deleteChat = async (req, res) => {
-  try {
-    await Chat.findByIdAndDelete(req.params.chatId)
-    res.status(200).json({ success: true, message: 'Chat deleted' })
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message })
+    next(error)
   }
 }

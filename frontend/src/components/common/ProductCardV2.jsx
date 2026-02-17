@@ -7,17 +7,26 @@ import useFavoriteStore from '../../store/favoriteStore'
 import useAuthStore from '../../store/authStore'
 import useComparisonStore from '../../store/comparisonStore'
 import QuickViewModal from './QuickViewModal'
+import PreOrderBadge from '../product/PreOrderBadge'
+import PreOrderModal from '../product/PreOrderModal'
+import SubscriptionBadge from '../subscription/SubscriptionBadge'
+import SubscriptionModal from '../subscription/SubscriptionModal'
+import { RefreshCw } from 'lucide-react'
+
 
 function ProductCardV2({ product, index = 0 }) {
   const [isHovered, setIsHovered] = useState(false)
   const [showQuickView, setShowQuickView] = useState(false)
+  const [showPreOrderModal, setShowPreOrderModal] = useState(false)
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
-  
+
+
   const { addItem } = useCartStore()
   const { toggleFavorite, isFavorite } = useFavoriteStore()
   const { isAuthenticated } = useAuthStore()
   const { addToComparison, isInComparison } = useComparisonStore()
-  
+
   const favorite = isFavorite(product._id)
   const inComparison = isInComparison(product._id)
 
@@ -36,7 +45,7 @@ function ProductCardV2({ product, index = 0 }) {
     toggleFavorite(product._id)
   }
 
-  const discountPercentage = product.oldPrice 
+  const discountPercentage = product.oldPrice
     ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
     : 0
 
@@ -72,6 +81,18 @@ function ProductCardV2({ product, index = 0 }) {
 
             {/* Badges */}
             <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
+              {product.isSubscriptionAvailable && (
+                <div className="z-20">
+                  <SubscriptionBadge product={product} size="small" />
+                </div>
+              )}
+
+              {product.isPreOrder && (
+                <div className="z-20">
+                  <PreOrderBadge product={product} size="small" />
+                </div>
+              )}
+
               {product.isNew && (
                 <motion.span
                   initial={{ scale: 0 }}
@@ -110,11 +131,10 @@ function ProductCardV2({ product, index = 0 }) {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={handleToggleFavorite}
-                className={`p-3 rounded-full backdrop-blur-md transition-all shadow-lg ${
-                  favorite
-                    ? 'bg-red-500 text-white'
-                    : 'bg-white/90 dark:bg-gray-700/90 text-gray-700 dark:text-gray-200 hover:bg-red-500 hover:text-white'
-                }`}
+                className={`p-3 rounded-full backdrop-blur-md transition-all shadow-lg ${favorite
+                  ? 'bg-red-500 text-white'
+                  : 'bg-white/90 dark:bg-gray-700/90 text-gray-700 dark:text-gray-200 hover:bg-red-500 hover:text-white'
+                  }`}
               >
                 <Heart
                   size={20}
@@ -136,6 +156,22 @@ function ProductCardV2({ product, index = 0 }) {
                 <Eye size={20} />
               </motion.button>
 
+              {/* SUBSCRIPTION BUTTON */}
+              {product.isSubscriptionAvailable && (
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    setShowSubscriptionModal(true)
+                  }}
+                  className="p-3 bg-white/90 dark:bg-gray-700/90 rounded-full backdrop-blur-md hover:bg-cyan-500 hover:text-white transition-all shadow-lg text-gray-700 dark:text-gray-200"
+                  title="Abonelik Seçenekleri"
+                >
+                  <RefreshCw size={20} />
+                </motion.button>
+              )}
+
               {/* COMPARISON BUTTON */}
               <motion.button
                 whileHover={{ scale: 1.1 }}
@@ -144,11 +180,10 @@ function ProductCardV2({ product, index = 0 }) {
                   e.preventDefault()
                   addToComparison(product)
                 }}
-                className={`p-3 rounded-full backdrop-blur-md transition-all shadow-lg ${
-                  inComparison
-                    ? 'bg-purple-500 text-white'
-                    : 'bg-white/90 dark:bg-gray-700/90 text-gray-700 dark:text-gray-200 hover:bg-purple-500 hover:text-white'
-                }`}
+                className={`p-3 rounded-full backdrop-blur-md transition-all shadow-lg ${inComparison
+                  ? 'bg-purple-500 text-white'
+                  : 'bg-white/90 dark:bg-gray-700/90 text-gray-700 dark:text-gray-200 hover:bg-purple-500 hover:text-white'
+                  }`}
                 title="Karşılaştır"
               >
                 <Scale size={20} />
@@ -162,7 +197,7 @@ function ProductCardV2({ product, index = 0 }) {
               className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"
             />
 
-            {/* Quick Add to Cart Button */}
+            {/* Quick Add to Cart / Pre-Order Button */}
             <motion.button
               initial={{ y: 100, opacity: 0 }}
               animate={{
@@ -170,13 +205,34 @@ function ProductCardV2({ product, index = 0 }) {
                 opacity: isHovered ? 1 : 0
               }}
               transition={{ duration: 0.3 }}
-              onClick={handleAddToCart}
-              disabled={product.stock === 0}
-              className="absolute bottom-4 left-4 right-4 py-3 bg-white dark:bg-dark-card text-black dark:text-dark-text rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-black hover:text-white dark:hover:bg-gray-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl z-20"
+              onClick={(e) => {
+                if (product.isPreOrder) {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  setShowPreOrderModal(true)
+                } else {
+                  handleAddToCart(e)
+                }
+              }}
+              disabled={!product.isPreOrder && product.stock === 0}
+              className={`absolute bottom-4 left-4 right-4 py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl z-20 ${product.isPreOrder
+                ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-2xl'
+                : 'bg-white dark:bg-dark-card text-black dark:text-dark-text hover:bg-black hover:text-white dark:hover:bg-gray-700'
+                }`}
             >
-              <ShoppingCart size={20} />
-              {product.stock === 0 ? 'Stokta Yok' : 'Sepete Ekle'}
+              {product.isPreOrder ? (
+                <>
+                  <Star size={20} className="fill-current" />
+                  Ön Sipariş Ver
+                </>
+              ) : (
+                <>
+                  <ShoppingCart size={20} />
+                  {product.stock === 0 ? 'Stokta Yok' : 'Sepete Ekle'}
+                </>
+              )}
             </motion.button>
+
           </div>
 
           {/* Product Info */}
@@ -251,6 +307,20 @@ function ProductCardV2({ product, index = 0 }) {
         </Link>
       </motion.div>
 
+      {/* Subscription Modal */}
+      <SubscriptionModal
+        product={product}
+        isOpen={showSubscriptionModal}
+        onClose={() => setShowSubscriptionModal(false)}
+      />
+
+      {/* Pre-Order Modal */}
+      <PreOrderModal
+        product={product}
+        isOpen={showPreOrderModal}
+        onClose={() => setShowPreOrderModal(false)}
+      />
+
       {/* QUICK VIEW MODAL */}
       <QuickViewModal
         product={product}
@@ -258,6 +328,7 @@ function ProductCardV2({ product, index = 0 }) {
         onClose={() => setShowQuickView(false)}
       />
     </>
+
   )
 }
 

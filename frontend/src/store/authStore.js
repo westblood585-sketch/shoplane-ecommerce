@@ -17,7 +17,7 @@ const useAuthStore = create(
         set({ loading: true, error: null })
         try {
           const data = await authAPI.register(userData)
-          
+
           // Data yapısını kontrol et
           if (!data) {
             throw new Error('Sunucudan boş yanıt alındı')
@@ -29,7 +29,7 @@ const useAuthStore = create(
             isAuthenticated: !!data.token,
             loading: false
           })
-          
+
           return { success: true, user: data.user || null }
         } catch (error) {
           console.error('Register Error Details:', {
@@ -38,12 +38,12 @@ const useAuthStore = create(
             status: error.response?.status,
             fullError: error
           })
-          
-          const message = 
-            error.response?.data?.message || 
-            error.message || 
+
+          const message =
+            error.response?.data?.message ||
+            error.message ||
             'Kayıt başarısız. Lütfen tekrar deneyin.'
-          
+
           set({ loading: false, error: message })
           return { success: false, error: message }
         }
@@ -96,6 +96,34 @@ const useAuthStore = create(
         } catch (error) {
           console.error('Google Login Error:', error)
           const message = error.response?.data?.message || error.message || 'Google giriş başarısız'
+          set({ loading: false, error: message })
+          return { success: false, error: message }
+        }
+      },
+
+      // Generic Social Login (Demo or Custom Provider)
+      socialLogin: async (providerData) => {
+        set({ loading: true, error: null })
+        try {
+          const response = await authAPI.socialLogin(providerData)
+          const data = response.data
+
+          if (!data?.token) {
+            throw new Error('Sunucudan token alınamadı')
+          }
+
+          localStorage.setItem('token', data.token)
+          set({
+            user: data.user || null,
+            token: data.token,
+            isAuthenticated: true,
+            loading: false
+          })
+
+          return { success: true, user: data.user || null }
+        } catch (error) {
+          console.error('Social Login Error:', error)
+          const message = error.response?.data?.message || error.message || 'Giriş başarısız'
           set({ loading: false, error: message })
           return { success: false, error: message }
         }

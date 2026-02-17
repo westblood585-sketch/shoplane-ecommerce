@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ShoppingCart, User, LogOut, Menu, X, Camera, Heart, Settings } from 'lucide-react'
+import { ShoppingCart, User, LogOut, Menu, X, Camera, Heart, Settings, Award, Package, Activity } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import useCartStore from '../../store/cartStore'
 import useAuthStore from '../../store/authStore'
@@ -40,15 +40,18 @@ function Navbar() {
             
             {/* LEFT SECTION - Logo & Brand */}
             <motion.div className="flex items-center gap-3 flex-shrink-0 min-w-0">
-              {/* Mobile Menu */}
-              <motion.button
-                whileTap={{ scale: 0.95 }}
+              {/* Mobile Menu - Hamburger Icon */}
+              <button
+                type="button"
                 onClick={() => setIsMobileMenuOpen(true)}
-                className="lg:hidden p-2.5 hover:bg-gradient-to-br hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/20 dark:hover:to-purple-900/20 rounded-xl transition-all duration-300"
-                aria-label="Menu"
+                className="p-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all z-50 flex flex-col gap-1.5 w-10 h-10 items-center justify-center"
+                aria-label="Menüyü aç"
+                title="Menüyü aç"
               >
-                <Menu size={22} className="dark:text-dark-text text-gray-800" />
-              </motion.button>
+                <span className="w-5 h-px bg-gray-800 dark:bg-white block"></span>
+                <span className="w-5 h-px bg-gray-800 dark:bg-white block"></span>
+                <span className="w-5 h-px bg-gray-800 dark:bg-white block"></span>
+              </button>
 
               {/* Logo with Premium Badge */}
               <Link 
@@ -201,18 +204,50 @@ function Navbar() {
                               <Heart size={18} className="group-hover:text-red-600 dark:group-hover:text-red-400 transition" />
                               Favorilerim
                             </Link>
+                            <Link
+                              to="/loyalty"
+                              className="flex items-center gap-3 px-4 py-3 hover:bg-gradient-to-r hover:from-yellow-500/10 hover:to-orange-500/10 dark:hover:from-yellow-900/40 dark:hover:to-orange-900/40 rounded-lg transition-all duration-200 group dark:text-dark-text text-gray-700 font-medium text-sm"
+                              onClick={() => setShowUserMenu(false)}
+                            >
+                              <Award size={18} className="group-hover:text-yellow-600 dark:group-hover:text-yellow-400 transition" />
+                              Loyalty Program
+                            </Link>
+                            <Link
+                              to="/bundles"
+                              className="flex items-center gap-3 px-4 py-3 hover:bg-gradient-to-r hover:from-purple-500/10 hover:to-pink-500/10 dark:hover:from-purple-900/40 dark:hover:to-pink-900/40 rounded-lg transition-all duration-200 group dark:text-dark-text text-gray-700 font-medium text-sm"
+                              onClick={() => setShowUserMenu(false)}
+                            >
+                              <Package size={18} className="group-hover:text-purple-600 dark:group-hover:text-purple-400 transition" />
+                              Bundles
+                            </Link>
 
                             {/* Admin Section */}
                             {user?.role === 'admin' && (
                               <>
                                 <div className="my-2 h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent" />
                                 <Link
-                                  to="/admin"
+                                  to="/admin/analytics/comprehensive"
+                                  className="flex items-center gap-3 px-4 py-3 hover:bg-gradient-to-r hover:from-blue-500/10 hover:to-purple-500/10 dark:hover:from-blue-900/40 dark:hover:to-purple-900/40 rounded-lg transition-all duration-200 group text-blue-600 dark:text-blue-400 font-bold text-sm"
+                                  onClick={() => setShowUserMenu(false)}
+                                >
+                                  <Activity size={18} className="group-hover:text-blue-600 dark:group-hover:text-blue-400 transition" />
+                                  Analytics Dashboard
+                                </Link>
+                                <Link
+                                  to="/admin/bundles"
                                   className="flex items-center gap-3 px-4 py-3 hover:bg-gradient-to-r hover:from-purple-500/10 hover:to-pink-500/10 dark:hover:from-purple-900/40 dark:hover:to-pink-900/40 rounded-lg transition-all duration-200 group text-purple-600 dark:text-purple-400 font-bold text-sm"
                                   onClick={() => setShowUserMenu(false)}
                                 >
-                                  <Settings size={18} className="group-hover:rotate-90 transition-transform" />
-                                  ⚙️ Admin Panel
+                                  <Package size={18} className="group-hover:text-purple-600 dark:group-hover:text-purple-400 transition" />
+                                  Manage Bundles
+                                </Link>
+                                <Link
+                                  to="/admin/loyalty/stats"
+                                  className="flex items-center gap-3 px-4 py-3 hover:bg-gradient-to-r hover:from-yellow-500/10 hover:to-orange-500/10 dark:hover:from-yellow-900/40 dark:hover:to-orange-900/40 rounded-lg transition-all duration-200 group text-yellow-600 dark:text-yellow-400 font-bold text-sm"
+                                  onClick={() => setShowUserMenu(false)}
+                                >
+                                  <Award size={18} className="group-hover:text-yellow-600 dark:group-hover:text-yellow-400 transition" />
+                                  Loyalty Stats
                                 </Link>
                               </>
                             )}

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{campaignTitle}}</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+        .header {
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 32px;
+        }
+        .banner {
+            text-align: center;
+            font-size: 80px;
+            margin: 30px 0;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .campaign-box {
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            margin: 30px 0;
+            color: #ffffff;
+        }
+        .discount-badge {
+            background-color: #fbbf24;
+            color: #78350f;
+            font-size: 48px;
+            font-weight: bold;
+            padding: 20px;
+            border-radius: 50%;
+            display: inline-block;
+            width: 120px;
+            height: 120px;
+            line-height: 120px;
+            margin: 20px 0;
+        }
+        .code-box {
+            background-color: #ffffff;
+            color: #ec4899;
+            font-size: 28px;
+            font-weight: bold;
+            padding: 20px 40px;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 20px 0;
+            letter-spacing: 3px;
+            border: 3px dashed #ec4899;
+        }
+        .button {
+            display: inline-block;
+            background-color: #ffffff;
+            color: #ec4899;
+            text-decoration: none;
+            padding: 18px 50px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 18px;
+            margin: 20px 0;
+        }
+        .countdown {
+            background-color: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        .feature {
+            background-color: #fce7f3;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .feature-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        .footer {
+            background-color: #f9f9f9;
+            padding: 30px;
+            text-align: center;
+            color: #999999;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🎁 {{campaignTitle}}</h1>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <div class="banner">🔥</div>
+            
+            <h2 style="text-align: center; color: #333333;">Merhaba {{name}}! 👋</h2>
+            <p style="text-align: center; font-size: 18px; color: #666666;">
+                {{campaignDescription}}
+            </p>
+
+            <!-- Campaign Box -->
+            <div class="campaign-box">
+                <div class="discount-badge">%{{discountAmount}}</div>
+                <h2 style="margin: 20px 0;">SÜPER İNDİRİM!</h2>
+                <p style="font-size: 16px; margin: 10px 0;">İndirim Kodunu Kopyala:</p>
+                <div class="code-box">{{discountCode}}</div>
+                <p style="font-size: 14px; margin: 20px 0;">
+                    Sepette otomatik uygulanacak!
+                </p>
+            </div>
+
+            <!-- Countdown -->
+            <div class="countdown">
+                <p style="margin: 0; color: #92400e; font-size: 18px;">
+                    ⏰ <strong>ACELE ET!</strong>
+                </p>
+                <p style="margin: 10px 0 0 0; color: #78350f; font-size: 16px;">
+                    Kampanya {{validUntil}} tarihine kadar geçerli
+                </p>
+            </div>
+
+            <p style="text-align: center;">
+                <a href="{{campaignUrl}}" class="button">Alışverişe Başla 🛍️</a>
+            </p>
+
+            <!-- Features -->
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">🚚</div>
+                    <p style="margin: 0; font-weight: bold; color: #ec4899;">Ücretsiz Kargo</p>
+                    <p style="margin: 5px 0 0 0; font-size: 14px; color: #666666;">Tüm siparişlerde</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⚡</div>
+                    <p style="margin: 0; font-weight: bold; color: #ec4899;">Hızlı Teslimat</p>
+                    <p style="margin: 5px 0 0 0; font-size: 14px; color: #666666;">Aynı gün kargo</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🎁</div>
+                    <p style="margin: 0; font-weight: bold; color: #ec4899;">Hediye Paketi</p>
+                    <p style="margin: 5px 0 0 0; font-size: 14px; color: #666666;">Ücretsiz hediye</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">↩️</div>
+                    <p style="margin: 0; font-weight: bold; color: #ec4899;">Kolay İade</p>
+                    <p style="margin: 5px 0 0 0; font-size: 14px; color: #666666;">15 gün garantisi</p>
+                </div>
+            </div>
+
+            <p style="background-color: #fce7f3; padding: 15px; border-radius: 8px; color: #9f1239; text-align: center;">
+                💡 Bu fırsat kaçmaz! Sana özel hazırlanmış kampanyayı kaçırma!
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Bu e-postayı almak istemiyor musun?</p>
+            <p><a href="{{websiteUrl}}/unsubscribe" style="color: #999999;">E-posta bildirimlerinden çık</a></p>
+            <p>© 2026 MyShop. Tüm hakları saklıdır.</p>
+        </div>
+    </div>
+</body>
+</html>

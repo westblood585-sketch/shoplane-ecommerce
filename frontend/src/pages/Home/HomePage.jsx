@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react'
+import { useABTest } from '../../hooks/useABTest'
+import { useMetaDescription, metaDescriptions } from '../../utils/metaDescriptions'
 import { motion } from 'framer-motion'
-import { ArrowRight, Zap, TrendingUp, Shield, Truck, CreditCard, Sparkles, Flame, Clock, Eye, ShoppingBag, Users, Heart, Star, Gift, Package } from 'lucide-react'
+import { ArrowRight, Zap, TrendingUp, Shield, Truck, CreditCard, Sparkles, Flame, Clock, Eye, ShoppingBag, Users, Heart, Star, Gift, Package, Award } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useInView } from 'react-intersection-observer'
 import SEO from '../../components/seo/SEO'
 import Navbar from '../../components/layout/Navbar'
 import Footer from '../../components/layout/Footer'
 import BottomNav from '../../components/layout/BottomNav'
+import BrowseCategories from '../../components/seo/BrowseCategories'
 import HeroSectionV2 from '../../components/home/HeroSectionV2'
 import ProductCardV2 from '../../components/common/ProductCardV2'
 import BundleCard from '../../components/bundles/BundleCard'
@@ -15,6 +18,32 @@ import API from '../../api/axiosConfig'
 import RecentlyViewed from '../../components/Home/RecentlyViewed' // YENİ
 
 function HomePage() {
+  const { experiments, getVariant, getChanges, trackConversion } = useABTest('home')
+
+  // Set optimized meta description for SEO
+  useMetaDescription(metaDescriptions.home.description, metaDescriptions.home.title)
+
+  // CTA Button experiment
+  const ctaVariant = getVariant('Homepage CTA Button')
+  const ctaChanges = getChanges('Homepage CTA Button')
+
+  // Default values
+  const ctaConfig = {
+    text: ctaChanges.buttonText || 'Alışverişe Başla',
+    color: ctaChanges.buttonColor || 'from-blue-600 to-purple-600',
+    size: ctaChanges.buttonSize || 'large'
+  }
+
+  const handleCTAClick = () => {
+    // Track conversion
+    const experiment = experiments.find(e => e.experimentName === 'Homepage CTA Button')
+    if (experiment) {
+      trackConversion(experiment.experimentId)
+    }
+
+    // Navigate to products
+    window.location.href = '/products'
+  }
   const [featuredProducts, setFeaturedProducts] = useState([])
   const [newProducts, setNewProducts] = useState([])
   const [flashSaleProducts, setFlashSaleProducts] = useState([])
@@ -40,7 +69,7 @@ function HomePage() {
     const timer = setInterval(() => {
       setFlashSaleTimeLeft(prev => {
         let { hours, minutes, seconds } = prev
-        
+
         if (seconds > 0) {
           seconds--
         } else {
@@ -56,7 +85,7 @@ function HomePage() {
             }
           }
         }
-        
+
         return { hours, minutes, seconds }
       })
     }, 1000)
@@ -100,27 +129,27 @@ function HomePage() {
   ]
 
   const features = [
-    { 
-      icon: Truck, 
-      title: 'Ücretsiz Kargo', 
+    {
+      icon: Truck,
+      title: 'Ücretsiz Kargo',
       desc: '500₺ üzeri alışverişlerde',
       color: 'from-blue-500 to-cyan-500'
     },
-    { 
-      icon: Shield, 
-      title: 'Güvenli Ödeme', 
+    {
+      icon: Shield,
+      title: 'Güvenli Ödeme',
       desc: '256-bit SSL güvenlik',
       color: 'from-green-500 to-emerald-500'
     },
-    { 
-      icon: CreditCard, 
-      title: 'Kolay İade', 
+    {
+      icon: CreditCard,
+      title: 'Kolay İade',
       desc: '14 gün içinde iade hakkı',
       color: 'from-purple-500 to-pink-500'
     },
-    { 
-      icon: Zap, 
-      title: 'Hızlı Teslimat', 
+    {
+      icon: Zap,
+      title: 'Hızlı Teslimat',
       desc: '2-4 iş günü içinde',
       color: 'from-orange-500 to-red-500'
     }
@@ -165,9 +194,71 @@ function HomePage() {
       />
 
       <Navbar />
-      
-      {/* Hero Section */}
+
+      {/* Hero Section with HeroSectionV2 */}
       <HeroSectionV2 />
+
+      {/* Bundles Section */}
+      <section className="py-16 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <Package size={48} className="mx-auto mb-4 text-purple-600" />
+            <h2 className="text-4xl font-bold mb-4 dark:text-dark-text">
+              Product Bundles
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-400">
+              Save more when you buy together!
+            </p>
+          </div>
+          <div className="text-center">
+            <button
+              onClick={() => window.location.href = '/bundles'}
+              className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-bold text-lg hover:shadow-2xl transition"
+            >
+              Browse Bundles
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Loyalty Program Section */}
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="bg-gradient-to-r from-yellow-600 to-orange-600 rounded-3xl p-12 text-white text-center">
+            <Award size={64} className="mx-auto mb-6" />
+            <h2 className="text-5xl font-bold mb-4">
+              Join Our Loyalty Program
+            </h2>
+            <p className="text-2xl mb-8 opacity-90">
+              Earn points with every purchase and unlock exclusive rewards!
+            </p>
+            <div className="grid grid-cols-4 gap-8 mb-8">
+              <div>
+                <p className="text-4xl font-bold mb-2">1x - 3x</p>
+                <p className="text-sm">Points Multiplier</p>
+              </div>
+              <div>
+                <p className="text-4xl font-bold mb-2">5</p>
+                <p className="text-sm">Tier Levels</p>
+              </div>
+              <div>
+                <p className="text-4xl font-bold mb-2">500+</p>
+                <p className="text-sm">Points Per Referral</p>
+              </div>
+              <div>
+                <p className="text-4xl font-bold mb-2">∞</p>
+                <p className="text-sm">Exclusive Rewards</p>
+              </div>
+            </div>
+            <button
+              onClick={() => window.location.href = '/loyalty'}
+              className="px-8 py-4 bg-white text-orange-600 rounded-xl font-bold text-lg hover:shadow-2xl transition"
+            >
+              Start Earning Points
+            </button>
+          </div>
+        </div>
+      </section>
 
       {/* Live Activity Banner */}
       <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2 overflow-hidden">
@@ -272,7 +363,7 @@ function HomePage() {
               <span className="text-2xl font-bold text-red-600">FLASH SALE</span>
               <Flame className="text-red-600" size={32} />
             </div>
-            
+
             <h2 className="text-4xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg">
               Sınırlı Süre!
             </h2>
@@ -590,6 +681,9 @@ function HomePage() {
           </motion.div>
         </div>
       </section>
+
+      {/* SEO: Browse Categories Internal Linking */}
+      <BrowseCategories title="Kategorileri Keşfet" limit={6} />
 
       <Footer />
       <BottomNav />

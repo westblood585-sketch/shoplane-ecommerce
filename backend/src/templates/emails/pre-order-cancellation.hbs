@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: #ef4444;
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .content {
+            background: #f9f9f9;
+            padding: 30px;
+        }
+
+        .details {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>❌ Sipariş İptal Edildi</h1>
+        </div>
+        <div class="content">
+            <p>Merhaba {{name}},</p>
+            <p>Ön siparişiniz (#{{orderNumber}}) iptal edilmiştir.</p>
+
+            <div class="details">
+                <p><strong>İptal Nedeni:</strong> {{cancelReason}}</p>
+                {{#if refundAmount}}
+                <p><strong>İade Edilecek Tutar:</strong> ₺{{refundAmount}}</p>
+                <p>İadeniz bankanıza bağlı olarak 3-7 iş günü içinde hesabınıza yansıyacaktır.</p>
+                {{/if}}
+            </div>
+
+            <p>Herhangi bir sorunuz varsa müşteri hizmetleri ile iletişime geçebilirsiniz.</p>
+        </div>
+    </div>
+</body>
+
+</html>

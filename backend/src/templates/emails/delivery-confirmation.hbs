@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Siparişin Teslim Edildi</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+        .header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 32px;
+        }
+        .celebration {
+            text-align: center;
+            font-size: 100px;
+            margin: 30px 0;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .success-box {
+            background-color: #d1fae5;
+            border-left: 4px solid #10b981;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .product-item {
+            display: flex;
+            padding: 15px;
+            background-color: #f9fafb;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .product-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-right: 15px;
+        }
+        .product-info {
+            flex: 1;
+        }
+        .review-box {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin: 30px 0;
+            color: #ffffff;
+        }
+        .stars {
+            font-size: 40px;
+            margin: 15px 0;
+        }
+        .button {
+            display: inline-block;
+            background-color: #ffffff;
+            color: #f59e0b;
+            text-decoration: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .points-badge {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .footer {
+            background-color: #f9f9f9;
+            padding: 30px;
+            text-align: center;
+            color: #999999;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🎉 Teslim Edildi!</h1>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <div class="celebration">🎊</div>
+            
+            <h2 style="text-align: center; color: #333333;">Harika Haber {{name}}! 🎈</h2>
+            <p style="text-align: center; font-size: 18px; color: #666666;">
+                Siparişin başarıyla teslim edildi. Umarız ürünlerini beğenmişsindir!
+            </p>
+
+            <!-- Success Box -->
+            <div class="success-box">
+                <p style="margin: 0; color: #065f46; font-size: 18px;">
+                    <strong>✓ Sipariş #{{orderNumber}}</strong>
+                </p>
+                <p style="margin: 10px 0 0 0; color: #047857;">
+                    Teslim Alındı
+                </p>
+            </div>
+
+            <!-- Products -->
+            <h3 style="color: #333333;">Teslim Edilen Ürünler:</h3>
+            {{#each items}}
+            <div class="product-item">
+                <img src="{{product.images.0}}" alt="{{product.name}}" class="product-image">
+                <div class="product-info">
+                    <p style="font-weight: bold; margin: 0; color: #333333;">{{product.name}}</p>
+                    <p style="color: #10b981; font-weight: bold; margin: 5px 0;">{{product.price}}₺</p>
+                </div>
+            </div>
+            {{/each}}
+
+            <!-- Points Badge -->
+            <div class="points-badge">
+                <p style="margin: 0; font-size: 18px;">🎁 Kazandığın Puanlar</p>
+                <p style="margin: 10px 0 0 0; font-size: 32px; font-weight: bold;">+50 Puan!</p>
+                <p style="margin: 5px 0 0 0; font-size: 14px;">Bir sonraki alışverişinde kullanabilirsin</p>
+            </div>
+
+            <!-- Review Box -->
+            <div class="review-box">
+                <h2 style="margin: 0 0 10px 0;">Deneyimini Paylaş!</h2>
+                <p style="margin: 0 0 20px 0; font-size: 16px;">
+                    Ürünleri nasıl buldun? Yorumun bizim için çok değerli!
+                </p>
+                <div class="stars">⭐⭐⭐⭐⭐</div>
+                <p style="margin: 10px 0;">
+                    <a href="{{reviewUrl}}" class="button">Yorum Yap & +20 Puan Kazan</a>
+                </p>
+            </div>
+
+            <p style="background-color: #fef3c7; padding: 15px; border-radius: 8px; color: #92400e;">
+                💡 <strong>İpucu:</strong> Fotoğraflı yorum yaparak ekstra +30 puan kazanabilirsin!
+            </p>
+
+            <p style="color: #666666; text-align: center; margin-top: 30px;">
+                Ürünle ilgili sorun mu yaşıyorsun? 
+                <a href="{{websiteUrl}}/support" style="color: #10b981; font-weight: bold;">Destek Ekibimize Ulaş</a>
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Teşekkürler! Tekrar görüşmek dileğiyle 💚</p>
+            <p>© 2026 MyShop. Tüm hakları saklıdır.</p>
+        </div>
+    </div>
+</body>
+</html>

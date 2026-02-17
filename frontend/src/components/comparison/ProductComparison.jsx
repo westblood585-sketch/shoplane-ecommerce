@@ -84,7 +84,7 @@ function ProductComparison({ products = [] }) {
                 <td key={product._id} className="py-4 px-4 text-center min-w-[200px]">
                   <div>
                     <img
-                      src={product.image || 'https://via.placeholder.com/150'}
+                      src={product.images?.[0] || '/default-product-image.svg'}
                       alt={product.name}
                       className="w-24 h-24 object-cover rounded-lg mx-auto mb-2"
                     />
@@ -121,7 +121,7 @@ function ProductComparison({ products = [] }) {
                         id: product._id,
                         name: product.name,
                         price: product.price,
-                        image: product.image,
+                        image: product.images?.[0],
                         quantity: 1
                       })}
                       className="w-full px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-semibold hover:shadow-lg transition flex items-center justify-center gap-2 text-sm"

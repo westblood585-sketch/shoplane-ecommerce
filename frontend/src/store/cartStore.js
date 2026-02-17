@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { toast } from 'react-hot-toast'
 
 const useCartStore = create(
   persist(
@@ -8,68 +9,98 @@ const useCartStore = create(
       items: [],
       couponCode: '',
       couponDiscount: 0,
+      giftWrap: null,
+      bundles: [], // NEW: Bundle items
 
       // Sepete ürün ekle
-      addItem: (product, size, color, quantity = 1) => {
-        const items = get().items
-        const existingItemIndex = items.findIndex(
-          item => 
-            item._id === product._id && 
-            item.size === size && 
-            item.color === color
-        )
+      addItem: (product, size = 'Standart', color = 'Standart', quantity = 1, options = {}) => {
+        const { items } = get()
 
-        if (existingItemIndex > -1) {
-          // Ürün zaten varsa miktarı artır
-          const newItems = [...items]
-          const newQuantity = newItems[existingItemIndex].quantity + quantity
-          
-          // Stok kontrolü
-          if (newQuantity > product.stock) {
-            alert('Maksimum stok miktarına ulaştınız!')
+        // Create unique ID for cart item based on product + variants + subscription options
+        const cartItemId = `${product._id}-${size}-${color}${options.isSubscription ? `-${options.plan}` : ''}`
+
+        const existingItem = items.find(item => item.cartItemId === cartItemId || (item._id === product._id && item.size === size && item.color === color && !item.isSubscription && !options.isSubscription))
+
+        if (existingItem) {
+          // Check stock limit
+          if (existingItem.quantity + quantity > product.stock) {
+            toast.error('Stok limitine ulaşıldı!')
             return
           }
-          
-          newItems[existingItemIndex].quantity = newQuantity
-          set({ items: newItems })
-        } else {
-          // Yeni ürün ekle
+
           set({
-            items: [
-              ...items,
-              {
-                _id: product._id,
-                name: product.name,
-                price: product.price,
-                image: product.images?.[0] || product.image,
-                brand: product.brand,
-                category: product.category,
-                stock: product.stock,
-                size: size || 'Standart',
-                color: color || 'Standart',
-                quantity,
-                cartId: `${product._id}-${size}-${color}-${Date.now()}`
-              }
-            ]
+            items: items.map(item =>
+              (item.cartItemId === cartItemId || item._id === existingItem._id)
+                ? { ...item, quantity: item.quantity + quantity }
+                : item
+            )
           })
+          toast.success('Sepet güncellendi!')
+        } else {
+          if (quantity > product.stock) {
+            toast.error('Yetersiz stok!')
+            return
+          }
+
+          set({
+            items: [...items, {
+              ...product,
+              cartItemId,
+              size: size,
+              color: color,
+              selectedSize: size, // Keep both for compatibility
+              selectedColor: color, // Keep both for compatibility
+              quantity,
+              // Subscription specific fields
+              isSubscription: options.isSubscription,
+              plan: options.plan,
+              discount: options.discount,
+              originalPrice: product.price,
+              price: options.price || product.price, // Use subscription price if provided
+              isNew: undefined // Clean up
+            }]
+          })
+          toast.success('Sepete eklendi!')
+
+          // Track funnel event
+          if (window.trackFunnelEvent) {
+            window.trackFunnelEvent('add_to_cart', {
+              productId: product._id,
+              productName: product.name,
+              quantity,
+              price: product.price
+            })
+          }
+
+          // Track journey touchpoint
+          if (window.trackJourneyTouchpoint) {
+            window.trackJourneyTouchpoint('add_to_cart', {
+              product: product._id,
+              metadata: {
+                quantity,
+                price: product.price,
+                productName: product.name
+              }
+            })
+          }
         }
       },
 
       // Ürün miktarını güncelle
       updateQuantity: (cartId, quantity) => {
         if (quantity < 1) return
-        
+
         const items = get().items
-        const item = items.find(i => i.cartId === cartId)
-        
+        const item = items.find(i => i.cartItemId === cartId || i.cartId === cartId)
+
         if (item && quantity > item.stock) {
-          alert('Maksimum stok miktarına ulaştınız!')
+          toast.error('Maksimum stok miktarına ulaştınız!')
           return
         }
-        
+
         set({
           items: items.map(item =>
-            item.cartId === cartId ? { ...item, quantity } : item
+            (item.cartItemId === cartId || item.cartId === cartId) ? { ...item, quantity } : item
           )
         })
       },
@@ -77,13 +108,22 @@ const useCartStore = create(
       // Ürünü sepetten kaldır
       removeItem: (cartId) => {
         set({
-          items: get().items.filter(item => item.cartId !== cartId)
+          items: get().items.filter(item => (item.cartItemId !== cartId && item.cartId !== cartId))
         })
       },
 
       // Sepeti temizle
       clearCart: () => {
-        set({ items: [], couponCode: '', couponDiscount: 0 })
+        set({ items: [], couponCode: '', couponDiscount: 0, giftWrap: null })
+      },
+
+      // Gift wrap functions
+      setGiftWrap: (wrap) => {
+        set({ giftWrap: wrap })
+      },
+
+      removeGiftWrap: () => {
+        set({ giftWrap: null })
       },
 
       // Kupon uygula
@@ -125,16 +165,69 @@ const useCartStore = create(
       },
 
       getTotal: () => {
-        const subtotal = get().getSubtotal()
-        const shipping = get().getShipping()
-        const discount = get().getDiscount()
-        return subtotal + shipping - discount
+        const { items, bundles } = get()
+        const itemsTotal = items.reduce((total, item) => {
+          return total + (item.product.price * item.quantity)
+        }, 0)
+        const bundlesTotal = bundles.reduce((total, bundle) => {
+          return total + (bundle.price * bundle.quantity)
+        }, 0)
+        return itemsTotal + bundlesTotal
       },
 
       // Sepetteki toplam ürün sayısı
       getTotalItems: () => {
-        return get().items.reduce((total, item) => total + item.quantity, 0)
-      }
+        const { items, bundles } = get()
+        const itemsCount = items.reduce((count, item) => count + item.quantity, 0)
+        const bundlesCount = bundles.reduce((count, bundle) => count + bundle.quantity, 0)
+        return itemsCount + bundlesCount
+      },
+
+      // Bundle işlemleri
+      addBundleToCart: (bundle, quantity = 1, selectedProducts = []) => {
+        const { bundles } = get()
+        const existingIndex = bundles.findIndex(
+          b => b.bundle._id === bundle._id &&
+          JSON.stringify(b.selectedProducts) === JSON.stringify(selectedProducts)
+        )
+        if (existingIndex !== -1) {
+          const newBundles = [...bundles]
+          newBundles[existingIndex].quantity += quantity
+          set({ bundles: newBundles })
+        } else {
+          set({
+            bundles: [
+              ...bundles,
+              {
+                bundle,
+                quantity,
+                selectedProducts,
+                price: bundle.pricing.finalPrice
+              }
+            ]
+          })
+        }
+      },
+      removeBundleFromCart: (bundleId, selectedProducts = []) => {
+        set({
+          bundles: get().bundles.filter(
+            b => !(b.bundle._id === bundleId &&
+              JSON.stringify(b.selectedProducts) === JSON.stringify(selectedProducts))
+          )
+        })
+      },
+      updateBundleQuantity: (bundleId, selectedProducts, quantity) => {
+        const { bundles } = get()
+        const newBundles = bundles.map(b => {
+          if (b.bundle._id === bundleId &&
+              JSON.stringify(b.selectedProducts) === JSON.stringify(selectedProducts)) {
+            return { ...b, quantity: Math.max(1, quantity) }
+          }
+          return b
+        })
+        set({ bundles: newBundles })
+      },
+      clearBundles: () => set({ bundles: [] }),
     }),
     {
       name: 'cart-storage'

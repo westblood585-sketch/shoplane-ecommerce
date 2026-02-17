@@ -63,56 +63,58 @@ function HeroSectionV2() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Side - Text */}
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              style={{ y: scrollY * 0.2 }}
-            >
+            <div>
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-lg rounded-full mb-6 border border-white/20"
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+                style={{ y: scrollY * 0.2 }}
               >
-                <Sparkles className="text-yellow-400" size={20} />
-                <span className="text-white text-sm font-semibold">Kış İndirimleri Başladı!</span>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-lg rounded-full mb-6 border border-white/20"
+                >
+                  <Sparkles className="text-yellow-400" size={20} />
+                  <span className="text-white text-sm font-semibold">Kış İndirimleri Başladı!</span>
+                </motion.div>
+
+                <motion.h1
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight"
+                >
+                  Tarzını
+                  <span className="block bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
+                    Yeniden Keşfet
+                  </span>
+                </motion.h1>
+
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="text-xl text-gray-300 mb-8 max-w-lg"
+                >
+                  En trend ürünler, en uygun fiyatlar ve hızlı teslimat. 
+                  Hayallerindeki alışveriş deneyimi burada!
+                </motion.p>
               </motion.div>
 
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight"
-              >
-                Tarzını
-                <span className="block bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                  Yeniden Keşfet
-                </span>
-              </motion.h1>
-
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="text-xl text-gray-300 mb-8 max-w-lg"
-              >
-                En trend ürünler, en uygun fiyatlar ve hızlı teslimat. 
-                Hayallerindeki alışveriş deneyimi burada!
-              </motion.p>
-
-              {/* CTA Buttons */}
+              {/* CTA Buttons - NO SCROLL EFFECT */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="flex flex-wrap gap-4 mb-12"
+                className="flex flex-wrap gap-4 mb-12 relative z-30"
               >
                 <Link
                   to="/products"
-                  className="group relative px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full font-bold text-white overflow-hidden transition-all hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/50"
+                  className="group relative px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full font-bold overflow-hidden transition-all hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/50 cursor-pointer"
                 >
-                  <span className="relative z-10 flex items-center gap-2">
+                  <span className="relative z-10 flex items-center gap-2 text-white text-lg font-bold">
                     Alışverişe Başla
                     <ChevronRight className="group-hover:translate-x-1 transition-transform" size={20} />
                   </span>
@@ -121,7 +123,7 @@ function HeroSectionV2() {
 
                 <Link
                   to="/products?category=İndirimli"
-                  className="px-8 py-4 bg-white/10 backdrop-blur-lg border-2 border-white/30 rounded-full font-bold text-white hover:bg-white/20 transition-all hover:scale-105"
+                  className="px-8 py-4 bg-white/10 backdrop-blur-lg border-2 border-white/30 rounded-full hover:bg-white/20 transition-all hover:scale-105 cursor-pointer text-white text-lg font-bold"
                 >
                   İndirimleri Gör
                 </Link>
@@ -149,7 +151,7 @@ function HeroSectionV2() {
                   </motion.div>
                 ))}
               </motion.div>
-            </motion.div>
+            </div>
 
             {/* Right Side - 3D Product Showcase */}
             <motion.div

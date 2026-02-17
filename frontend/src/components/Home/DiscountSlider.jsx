@@ -60,7 +60,7 @@ function DiscountSlider() {
             <div className="bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl overflow-hidden shadow-xl">
               <div className="relative h-64">
                 <img 
-                  src={product.image} 
+                  src={product.images?.[0]} 
                   alt={product.name}
                   className="w-full h-full object-cover"
                 />

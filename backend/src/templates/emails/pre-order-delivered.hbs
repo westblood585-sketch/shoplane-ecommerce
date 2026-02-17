@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: #10b981;
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .content {
+            background: #f9f9f9;
+            padding: 30px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #10b981;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎉 Siparişiniz Teslim Edildi!</h1>
+        </div>
+        <div class="content">
+            <p>Merhaba {{name}},</p>
+            <p>Ön siparişiniz (#{{orderNumber}}) başarıyla teslim edildi. Güle güle kullanın!</p>
+
+            <p>Deneyiminizi paylaşmak için sitemizi ziyaret edip yorum yapabilirsiniz.</p>
+
+            <center>
+                <a href="{{websiteUrl}}/products" class="button">Alışverişe Devam Et</a>
+            </center>
+        </div>
+    </div>
+</body>
+
+</html>

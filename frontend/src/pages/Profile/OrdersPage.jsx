@@ -1,10 +1,13 @@
 import { Link } from 'react-router-dom'
+import { useMetaDescription, metaDescriptions } from '../../utils/metaDescriptions'
 import { Package, Truck, CheckCircle, Clock, Eye } from 'lucide-react'
 import Navbar from '../../components/layout/Navbar'
 import Footer from '../../components/layout/Footer'
 import useOrderStore from '../../store/orderStore'
 
 function OrdersPage() {
+  // Set optimized meta description for SEO
+  useMetaDescription(metaDescriptions.orders.description, metaDescriptions.orders.title)
   const { orders } = useOrderStore()
 
   const getStatusIcon = (status) => {

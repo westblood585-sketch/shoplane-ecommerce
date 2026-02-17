@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useMetaDescription, metaDescriptions } from '../../utils/metaDescriptions'
 import { Mail, Lock, User, Phone, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react'
 import useAuthStore from '../../store/authStore'
 
 function RegisterPage() {
+  // Set optimized meta description for SEO
+  useMetaDescription(metaDescriptions.register.description, metaDescriptions.register.title)
   const navigate = useNavigate()
   const { register } = useAuthStore()
 
@@ -107,23 +110,32 @@ function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{
+      backgroundImage: `url('/neon-bg.jpg')`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundAttachment: 'fixed',
+      backgroundColor: '#0a0a0a'
+    }}>
+      {/* Overlay for better readability */}
+      <div className="absolute inset-0 bg-black/20 z-0" />
+      
+      <div className="max-w-md w-full relative z-10">
         {/* Logo */}
         <Link to="/" className="block text-center mb-8">
-          <h1 className="text-4xl font-bold text-blue-600">MyShop</h1>
+          <h1 className="text-4xl font-bold text-white">MyShop</h1>
         </Link>
 
         {/* Form Container */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <h2 className="text-3xl font-bold text-center mb-2">Hesap Oluştur</h2>
-          <p className="text-gray-600 text-center mb-8">
+        <div className="bg-white/10 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl p-8">
+          <h2 className="text-3xl font-bold text-center mb-2 text-white">Hesap Oluştur</h2>
+          <p className="text-white/70 text-center mb-8">
             Hemen ücretsiz hesap açın ve alışverişe başlayın
           </p>
 
           {/* Genel Hata Mesajı */}
           {generalError && (
-            <div className="bg-red-50 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded-lg mb-6 flex items-start gap-3">
+            <div className="bg-red-500/20 border border-red-500/30 text-red-100 px-4 py-3 rounded-lg mb-6 flex items-start gap-3">
               <AlertCircle size={20} className="flex-shrink-0 mt-0.5" />
               <span>{generalError}</span>
             </div>
@@ -133,27 +145,27 @@ function RegisterPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Ad Soyad */}
             <div>
-              <label className="block text-sm font-semibold mb-2 flex items-center gap-2">
+              <label className="block text-sm font-semibold mb-2 flex items-center gap-2 text-white">
                 <span>Ad Soyad</span>
-                {formData.name && !errors.name && <CheckCircle size={16} className="text-green-500" />}
+                {formData.name && !errors.name && <CheckCircle size={16} className="text-green-400" />}
               </label>
               <div className="relative">
-                <User className="absolute left-3 top-3 text-gray-400" size={20} />
+                <User className="absolute left-3 top-3 text-white/40" size={20} />
                 <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="Adınız ve soyadınız"
-                  className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition ${
+                  className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition bg-white/5 text-white placeholder:text-white/30 ${
                     errors.name
-                      ? 'border-red-500 focus:border-red-500 bg-red-50'
-                      : 'border-gray-200 focus:border-blue-500'
+                      ? 'border-red-500/50 focus:border-red-500 bg-red-500/10'
+                      : 'border-white/20 focus:border-white/40'
                   }`}
                 />
               </div>
               {errors.name && (
-                <p className="text-red-600 text-sm mt-2 flex items-center gap-1">
+                <p className="text-red-300 text-sm mt-2 flex items-center gap-1">
                   <AlertCircle size={14} />
                   {errors.name}
                 </p>
@@ -162,27 +174,27 @@ function RegisterPage() {
 
             {/* E-posta */}
             <div>
-              <label className="block text-sm font-semibold mb-2 flex items-center gap-2">
+              <label className="block text-sm font-semibold mb-2 flex items-center gap-2 text-white">
                 <span>E-posta</span>
-                {formData.email && !errors.email && <CheckCircle size={16} className="text-green-500" />}
+                {formData.email && !errors.email && <CheckCircle size={16} className="text-green-400" />}
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-3 text-gray-400" size={20} />
+                <Mail className="absolute left-3 top-3 text-white/40" size={20} />
                 <input
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="ornek@email.com"
-                  className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition ${
+                  className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition bg-white/5 text-white placeholder:text-white/30 ${
                     errors.email
-                      ? 'border-red-500 focus:border-red-500 bg-red-50'
-                      : 'border-gray-200 focus:border-blue-500'
+                      ? 'border-red-500/50 focus:border-red-500 bg-red-500/10'
+                      : 'border-white/20 focus:border-white/40'
                   }`}
                 />
               </div>
               {errors.email && (
-                <p className="text-red-600 text-sm mt-2 flex items-center gap-1">
+                <p className="text-red-300 text-sm mt-2 flex items-center gap-1">
                   <AlertCircle size={14} />
                   {errors.email}
                 </p>
@@ -191,50 +203,50 @@ function RegisterPage() {
 
             {/* Telefon */}
             <div>
-              <label className="block text-sm font-semibold mb-2">Telefon (Opsiyonel)</label>
+              <label className="block text-sm font-semibold mb-2 text-white">Telefon (Opsiyonel)</label>
               <div className="relative">
-                <Phone className="absolute left-3 top-3 text-gray-400" size={20} />
+                <Phone className="absolute left-3 top-3 text-white/40" size={20} />
                 <input
                   type="tel"
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
                   placeholder="05XX XXX XX XX"
-                  className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                  className="w-full pl-10 pr-4 py-3 border-2 border-white/20 rounded-lg focus:outline-none focus:border-white/40 bg-white/5 text-white placeholder:text-white/30 transition"
                 />
               </div>
             </div>
 
             {/* Şifre */}
             <div>
-              <label className="block text-sm font-semibold mb-2 flex items-center gap-2">
+              <label className="block text-sm font-semibold mb-2 flex items-center gap-2 text-white">
                 <span>Şifre</span>
-                {formData.password && !errors.password && <CheckCircle size={16} className="text-green-500" />}
+                {formData.password && !errors.password && <CheckCircle size={16} className="text-green-400" />}
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-3 text-gray-400" size={20} />
+                <Lock className="absolute left-3 top-3 text-white/40" size={20} />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="En az 6 karakter (büyük harf + rakam)"
-                  className={`w-full pl-10 pr-12 py-3 border-2 rounded-lg focus:outline-none transition ${
+                  className={`w-full pl-10 pr-12 py-3 border-2 rounded-lg focus:outline-none transition bg-white/5 text-white placeholder:text-white/30 ${
                     errors.password
-                      ? 'border-red-500 focus:border-red-500 bg-red-50'
-                      : 'border-gray-200 focus:border-blue-500'
+                      ? 'border-red-500/50 focus:border-red-500 bg-red-500/10'
+                      : 'border-white/20 focus:border-white/40'
                   }`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-3 text-white/40 hover:text-white transition-colors"
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
               {errors.password && (
-                <p className="text-red-600 text-sm mt-2 flex items-center gap-1">
+                <p className="text-red-300 text-sm mt-2 flex items-center gap-1">
                   <AlertCircle size={14} />
                   {errors.password}
                 </p>
@@ -243,34 +255,34 @@ function RegisterPage() {
 
             {/* Şifre Tekrar */}
             <div>
-              <label className="block text-sm font-semibold mb-2 flex items-center gap-2">
+              <label className="block text-sm font-semibold mb-2 flex items-center gap-2 text-white">
                 <span>Şifre Tekrar</span>
-                {formData.confirmPassword && !errors.confirmPassword && <CheckCircle size={16} className="text-green-500" />}
+                {formData.confirmPassword && !errors.confirmPassword && <CheckCircle size={16} className="text-green-400" />}
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-3 text-gray-400" size={20} />
+                <Lock className="absolute left-3 top-3 text-white/40" size={20} />
                 <input
                   type={showConfirmPassword ? 'text' : 'password'}
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   placeholder="Şifrenizi tekrar girin"
-                  className={`w-full pl-10 pr-12 py-3 border-2 rounded-lg focus:outline-none transition ${
+                  className={`w-full pl-10 pr-12 py-3 border-2 rounded-lg focus:outline-none transition bg-white/5 text-white placeholder:text-white/30 ${
                     errors.confirmPassword
-                      ? 'border-red-500 focus:border-red-500 bg-red-50'
-                      : 'border-gray-200 focus:border-blue-500'
+                      ? 'border-red-500/50 focus:border-red-500 bg-red-500/10'
+                      : 'border-white/20 focus:border-white/40'
                   }`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-3 text-white/40 hover:text-white transition-colors"
                 >
                   {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
               {errors.confirmPassword && (
-                <p className="text-red-600 text-sm mt-2 flex items-center gap-1">
+                <p className="text-red-300 text-sm mt-2 flex items-center gap-1">
                   <AlertCircle size={14} />
                   {errors.confirmPassword}
                 </p>
@@ -282,13 +294,13 @@ function RegisterPage() {
               <input
                 type="checkbox"
                 id="terms"
-                className="w-4 h-4 mt-1 accent-blue-600"
+                className="w-4 h-4 mt-1 accent-white"
                 required
               />
-              <label htmlFor="terms" className="text-sm text-gray-600">
-                <Link to="/terms" className="text-blue-600 hover:underline">Kullanım Şartları</Link>
+              <label htmlFor="terms" className="text-sm text-white/70">
+                <Link to="/terms" className="text-white/90 hover:text-white hover:underline">Kullanım Şartları</Link>
                 {' ve '}
-                <Link to="/privacy" className="text-blue-600 hover:underline">Gizlilik Politikası</Link>
+                <Link to="/privacy" className="text-white/90 hover:text-white hover:underline">Gizlilik Politikası</Link>
                 'nı okudum ve kabul ediyorum.
               </label>
             </div>
@@ -297,7 +309,7 @@ function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3 bg-white text-black rounded-lg font-semibold hover:bg-white/90 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-white/20"
             >
               {loading ? 'Hesap Oluşturuluyor...' : 'Hesap Oluştur'}
             </button>
@@ -306,9 +318,9 @@ function RegisterPage() {
 
 
           {/* Login Link */}
-          <p className="text-center text-gray-600 mt-6">
+          <p className="text-center text-white/70 mt-6">
             Zaten hesabınız var mı?{' '}
-            <Link to="/login" className="text-blue-600 font-semibold hover:underline">
+            <Link to="/login" className="text-white/90 font-semibold hover:text-white hover:underline">
               Giriş Yapın
             </Link>
           </p>
@@ -317,7 +329,7 @@ function RegisterPage() {
         {/* Back to Home */}
         <Link
           to="/"
-          className="block text-center text-gray-600 hover:text-gray-900 mt-6"
+          className="block text-center text-white/70 hover:text-white mt-6 transition-colors"
         >
           ← Ana Sayfaya Dön
         </Link>

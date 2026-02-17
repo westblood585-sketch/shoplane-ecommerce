@@ -18,6 +18,8 @@ router.get('/', getProducts)
 router.get('/featured', getFeaturedProducts)
 router.get('/categories', getCategories)
 router.get('/brands', getBrands)
+
+// More specific routes before less specific routes
 router.get('/:id/frequently-bought-together', getFrequentlyBoughtTogether)
 router.get('/:id', getProduct)
 

@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { 
-  Smartphone, Laptop, Watch, Camera, Headphones, 
-  ShirtIcon, Briefcase, Gem, 
+import {
+  Smartphone, Laptop, Watch, Camera, Headphones,
+  ShirtIcon, Briefcase, Gem,
   ShoppingBag, Dumbbell, Sparkles, Home,
   ChevronRight, TrendingUp, Flame, Star
 } from 'lucide-react'
@@ -247,9 +247,9 @@ function MegaMenu() {
       featured: {
         title: 'En Çok Tercih Edilenler',
         products: [
-          { name: 'Yoga Mat Pro', price: '299₺', image: 'photo-1592476885657-236aa2c3e009' },
-          { name: 'Dumbbell Set', price: '1.899₺', image: 'photo-1540126613408-eca07ce68773' },
-          { name: 'Trekking Bag', price: '3.299₺', image: 'photo-1622260614153-03223fb72052' }
+          { name: 'Yoga Mat Pro', price: '299₺', image: 'https://images.unsplash.com/photo-1592476885657-236aa2c3e009?w=500&q=80' },
+          { name: 'Dumbbell Set', price: '1.899₺', image: 'https://images.unsplash.com/photo-1540126613408-eca07ce68773?w=500&q=80' },
+          { name: 'Trekking Bag', price: '3.299₺', image: 'https://images.unsplash.com/photo-1622260614153-03223fb72052?w=500&q=80' }
         ]
       },
       banner: {
@@ -328,7 +328,7 @@ function MegaMenu() {
                 >
                   <category.icon size={20} className="group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
                 </motion.div>
-                
+
                 <span className="font-semibold whitespace-nowrap dark:text-dark-text text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                   {category.name}
                 </span>
@@ -356,8 +356,8 @@ function MegaMenu() {
                 >
                   {/* Glow Effect */}
                   <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  
-                  <motion.div 
+
+                  <motion.div
                     className="relative bg-white dark:bg-dark-card rounded-3xl shadow-2xl border border-gray-100 dark:border-gray-700 overflow-hidden backdrop-blur-xl"
                     initial={{ rotateX: -10 }}
                     animate={{ rotateX: 0 }}
@@ -423,7 +423,7 @@ function MegaMenu() {
                                         <ChevronRight size={14} className="group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 transition-colors" />
                                       </motion.div>
                                       <span className="group-hover/item:font-semibold transition-all">{item}</span>
-                                      
+
                                       {/* Hover Line */}
                                       <motion.div
                                         className="absolute bottom-0 left-6 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 opacity-0 group-hover/item:opacity-100"
@@ -483,7 +483,7 @@ function MegaMenu() {
                                     transition={{ type: 'spring', stiffness: 300 }}
                                   >
                                     <img
-                                      src={`https://images.unsplash.com/${product.image}?w=200`}
+                                      src={product.images?.[0] || 'https://via.placeholder.com/200'}
                                       alt={product.name}
                                       className="w-full h-full object-cover"
                                     />

@@ -16,12 +16,12 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
-    minlength: 6
+    minlength: 6,
+    default: null
   },
   phone: {
     type: String,
-    required: true
+    default: ''
   },
   role: {
     type: String,
@@ -32,11 +32,26 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
-  // SOCIAL AUTH
-  socialAuth: {
-    google: String,
-    facebook: String,
-    apple: String
+  // Social Login Providers
+  socialProviders: {
+    google: {
+      uid: String,
+      email: String,
+      avatar: String,
+      connected: { type: Boolean, default: false }
+    },
+    facebook: {
+      uid: String,
+      email: String,
+      avatar: String,
+      connected: { type: Boolean, default: false }
+    },
+    apple: {
+      uid: String,
+      email: String,
+      avatar: String,
+      connected: { type: Boolean, default: false }
+    }
   },
   isActive: {
     type: Boolean,
@@ -84,19 +99,49 @@ const userSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
     }
+  },
+  // Email preferences - YENİ
+  emailSubscribed: {
+    type: Boolean,
+    default: true
+  },
+  notifications: {
+    orderUpdates: {
+      type: Boolean,
+      default: true
+    },
+    promotions: {
+      type: Boolean,
+      default: true
+    },
+    priceDrops: {
+      type: Boolean,
+      default: false
+    },
+    stockAlerts: {
+      type: Boolean,
+      default: false
+    },
+    newsletter: {
+      type: Boolean,
+      default: true
+    },
+    reviews: {
+      type: Boolean,
+      default: false
+    }
   }
 }, {
   timestamps: true
 })
 
-// Hash password
-userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) {
-    return next()
+// Hash password (only if password exists and is modified)
+userSchema.pre('save', async function() {
+  if (!this.isModified('password') || !this.password) {
+    return;
   }
   const salt = await bcrypt.genSalt(10)
   this.password = await bcrypt.hash(this.password, salt)
-  next()
 })
 
 // Compare password
@@ -104,11 +149,11 @@ userSchema.methods.comparePassword = async function(password) {
   return await bcrypt.compare(password, this.password)
 }
 
-// Token oluştur
+// Generate Auth Token
 userSchema.methods.generateAuthToken = function() {
   const jwt = require('jsonwebtoken')
-  return jwt.sign({ id: this._id }, process.env.JWT_SECRET || 'your-secret-key', {
-    expiresIn: process.env.JWT_EXPIRE || '30d'
+  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRE
   })
 }
 

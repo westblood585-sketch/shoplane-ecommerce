@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useMetaDescription, metaDescriptions } from '../../utils/metaDescriptions';
 import { motion } from 'framer-motion';
 import { Filter, Grid, List, SlidersHorizontal } from 'lucide-react';
 import SEO from '../../components/seo/SEO';
@@ -14,6 +15,9 @@ function ProductsPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+
+  // Set optimized meta description for SEO
+  useMetaDescription(metaDescriptions.products.description, metaDescriptions.products.title);
 
   // Filters
   const [filters, setFilters] = useState({

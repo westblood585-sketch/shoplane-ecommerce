@@ -8,7 +8,10 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "generate-og": "node generate-og-image.js"
+    "generate-og": "node generate-og-image.js",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage"
   },
   "dependencies": {
     "@react-oauth/google": "^0.13.4",
@@ -17,11 +20,13 @@
     "aos": "^2.3.4",
     "axios": "^1.13.2",
     "canvas-confetti": "^1.9.4",
+    "chart.js": "^4.5.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.29.0",
     "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.562.0",
     "react": "^19.2.3",
+    "react-chartjs-2": "^5.3.1",
     "react-dom": "^19.2.3",
     "react-dropzone": "^14.4.0",
     "react-helmet-async": "^2.0.5",
@@ -53,6 +58,10 @@
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.19",
     "vite": "^7.2.4",
-    "vite-plugin-imagemin": "^0.6.1"
+    "vite-plugin-imagemin": "^0.6.1",
+    "@testing-library/react": "^14.1.2",
+    "@testing-library/jest-dom": "^6.1.5",
+    "vitest": "^1.0.4",
+    "@vitest/ui": "^1.0.4"
   }
 }

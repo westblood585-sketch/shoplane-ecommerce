@@ -7,13 +7,20 @@ class SocketService {
 
   connect(userId) {
     if (!this.socket) {
-      this.socket = io(import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000', {
+      // Use environment variable if available, otherwise default to localhost:5001
+      const socketUrl = import.meta.env.VITE_SOCKET_URL || (
+        import.meta.env.PROD 
+          ? `${window.location.protocol}//${window.location.hostname}:5001`
+          : 'http://localhost:5001'
+      )
+      
+      this.socket = io(socketUrl, {
         withCredentials: true
       })
 
       this.socket.on('connect', () => {
         console.log('🔌 Socket connected:', this.socket.id)
-        
+
         if (userId) {
           this.socket.emit('join-user-room', userId)
         }

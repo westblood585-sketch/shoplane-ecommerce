@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { CheckCircle, Package, Truck, Home } from 'lucide-react'
+import { CheckCircle, Package, Truck, Home, Gift } from 'lucide-react'
 import Navbar from '../../components/layout/Navbar'
 import Footer from '../../components/layout/Footer'
 import useOrderStore from '../../store/orderStore'
@@ -93,10 +93,45 @@ function OrderSuccessPage() {
           </div>
         </div>
 
+        {/* Gift Wrap Display - YENİ */}
+        {currentOrder.giftWrap?.enabled && (
+          <div className="bg-gradient-to-r from-pink-50 to-rose-50 dark:from-pink-900/20 dark:to-rose-900/20 border border-pink-200 dark:border-pink-900 rounded-2xl p-6 mb-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="text-4xl">{currentOrder.giftWrap.icon || '🎁'}</div>
+              <div>
+                <h3 className="text-xl font-bold dark:text-dark-text">Hediye Paketi Eklendi</h3>
+                <p className="text-gray-600 dark:text-gray-400">Siparişiniz özel paketlenecek</p>
+              </div>
+            </div>
+
+            {currentOrder.giftWrap.message && (
+              <div className="bg-white dark:bg-dark-card rounded-xl p-4 border-2 border-pink-200 dark:border-pink-900">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">💌</span>
+                  <span className="font-semibold dark:text-dark-text">Hediye Mesajınız:</span>
+                </div>
+                <p className="text-gray-700 dark:text-gray-300 italic mb-3">
+                  "{currentOrder.giftWrap.message}"
+                </p>
+                <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+                  <span>Kimden: <strong>{currentOrder.giftWrap.from}</strong></span>
+                  <span>Kime: <strong>{currentOrder.giftWrap.to}</strong></span>
+                </div>
+              </div>
+            )}
+
+            <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-900 rounded-lg">
+              <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                ✨ <strong>Not:</strong> Pakette fiyat etiketi olmayacak ve hediye kartınız eklenecektir.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Sipariş Detayları */}
         <div className="bg-white rounded-xl shadow-lg p-8 mb-6">
           <h2 className="text-2xl font-bold mb-6">Sipariş Detayları</h2>
-          
+
           <div className="space-y-4 mb-6">
             {currentOrder.items.map((item, index) => (
               <div key={index} className="flex gap-4 pb-4 border-b last:border-b-0">
@@ -137,6 +172,12 @@ function OrderSuccessPage() {
               <div className="flex justify-between text-green-600">
                 <span>İndirim:</span>
                 <span className="font-semibold">-₺{currentOrder.discount.toFixed(2)}</span>
+              </div>
+            )}
+            {currentOrder.giftWrap?.enabled && (
+              <div className="flex justify-between text-pink-600">
+                <span>🎁 Hediye Paketi:</span>
+                <span className="font-semibold">+₺{currentOrder.giftWrap.price.toFixed(2)}</span>
               </div>
             )}
             <div className="flex justify-between text-xl font-bold pt-2 border-t">

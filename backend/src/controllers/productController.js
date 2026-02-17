@@ -234,31 +234,39 @@ exports.getBrands = async (req, res, next) => {
   }
 }
 
-// @desc    Sık birlikte alınan ürünler
+// @desc    Sık satılan ürünleri getir
 // @route   GET /api/products/:id/frequently-bought-together
 // @access  Public
 exports.getFrequentlyBoughtTogether = async (req, res, next) => {
   try {
-    const product = await Product.findById(req.params.id)
-    
+    const { id } = req.params
+    const limit = req.query.limit || 4
+
+    // Get the current product
+    const product = await Product.findById(id)
     if (!product) {
       return res.status(404).json({
         success: false,
-        message: 'Ürün bulunamadı'
+        message: 'Product not found'
       })
     }
 
-    // Aynı kategoriden rastgele 4 ürün getir (simüle edilmiş)
+    // Find products from the same category (excluding the current product)
+    // and products with similar tags or attributes
     const relatedProducts = await Product.find({
-      category: product.category,
-      _id: { $ne: product._id },
+      _id: { $ne: id },
+      $or: [
+        { category: product.category },
+        { brand: product.brand }
+      ],
       isActive: true
     })
-      .limit(4)
-      .select('name price oldPrice images brand rating numReviews stock')
+      .limit(Number(limit))
+      .lean()
 
     res.status(200).json({
       success: true,
+      count: relatedProducts.length,
       products: relatedProducts
     })
   } catch (error) {

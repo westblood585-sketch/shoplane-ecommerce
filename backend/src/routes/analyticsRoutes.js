@@ -1,14 +1,27 @@
 const express = require('express')
 const router = express.Router()
 const {
-  getDashboardStats,
-  getSalesReport
+  trackHeatmap,
+  getHeatmap,
+  startSession,
+  trackSessionEvent,
+  endSession,
+  getSessionReplay,
+  getSessions,
+  getInsights
 } = require('../controllers/analyticsController')
-const { protect, admin } = require('../middleware/auth')
+const { protect, authorize } = require('../middleware/auth')
 
-router.use(protect, admin)
+// Public routes (tracking)
+router.post('/heatmap', trackHeatmap)
+router.post('/session/start', startSession)
+router.post('/session/event', trackSessionEvent)
+router.post('/session/end', endSession)
 
-router.get('/dashboard', getDashboardStats)
-router.get('/sales-report', getSalesReport)
+// Admin routes (viewing)
+router.get('/heatmap/:page/:type', protect, authorize('admin'), getHeatmap)
+router.get('/session/:sessionId', protect, authorize('admin'), getSessionReplay)
+router.get('/sessions', protect, authorize('admin'), getSessions)
+router.get('/insights/:page', protect, authorize('admin'), getInsights)
 
 module.exports = router

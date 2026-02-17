@@ -1,7 +1,7 @@
 const User = require('../models/User')
 const { sendToken } = require('../utils/jwtToken')
 const crypto = require('crypto')
-const { sendWelcomeEmail } = require('../utils/emailService')
+const emailService = require('../utils/emailService')
 
 // @desc    Kayıt ol
 // @route   POST /api/auth/register
@@ -27,8 +27,8 @@ exports.register = async (req, res, next) => {
       phone
     })
 
-    // Hoş geldin maili gönder
-    sendWelcomeEmail(user)
+    // WELCOME EMAIL GÖNDER - YENİ
+    await emailService.sendWelcomeEmail(user)
 
     // Token gönder
     sendToken(user, 201, res)
@@ -93,76 +93,6 @@ exports.logout = async (req, res, next) => {
       success: true,
       message: 'Çıkış başarılı'
     })
-  } catch (error) {
-    next(error)
-  }
-}
-
-// @desc    Google ile giriş
-// @route   POST /api/auth/google-login
-// @access  Public
-exports.googleLogin = async (req, res, next) => {
-  try {
-    const { token } = req.body
-
-    if (!token) {
-      return res.status(400).json({
-        success: false,
-        message: 'Google token gerekli'
-      })
-    }
-
-    // NOT: Gerçek Google OAuth için google-auth-library-nodejs kullanılmalı
-    // Şimdilik token'ı base64'ten decode et ve email al
-    try {
-      // Google JWT token'ını parse et (OP basit şekilde payload al)
-      const parts = token.split('.')
-      if (parts.length !== 3) {
-        throw new Error('Geçersiz token format')
-      }
-
-      // Payload kısmını decode et
-      const payload = JSON.parse(
-        Buffer.from(parts[1], 'base64').toString('utf-8')
-      )
-
-      const { email, name, picture } = payload
-
-      if (!email) {
-        return res.status(400).json({
-          success: false,
-          message: 'E-posta bilgisi alınamadı'
-        })
-      }
-
-      // Kullanıcı var mı kontrol et
-      let user = await User.findOne({ email })
-
-      if (!user) {
-        // Yeni kullanıcı oluştur
-        user = await User.create({
-          name: name || email.split('@')[0],
-          email,
-          password: Math.random().toString(36).substring(2, 15), // Random password
-          avatar: picture,
-          isEmailVerified: true // Google sayesinde mail doğrulanmış
-        })
-
-        // Hoş geldin maili gönder
-        const { sendWelcomeEmail } = require('../utils/emailService')
-        sendWelcomeEmail(user)
-      }
-
-      // Token gönder
-      const { sendToken } = require('../utils/jwtToken')
-      sendToken(user, 200, res)
-    } catch (tokenError) {
-      console.error('Token parse error:', tokenError)
-      return res.status(400).json({
-        success: false,
-        message: 'Token doğrulaması başarısız'
-      })
-    }
   } catch (error) {
     next(error)
   }
@@ -325,42 +255,70 @@ exports.socialLogin = async (req, res, next) => {
   try {
     const { provider, uid, email, name, avatar } = req.body
 
-    // Validate
     if (!provider || !uid || !email) {
       return res.status(400).json({
         success: false,
-        message: 'Provider, UID ve email gerekli'
+        message: 'Provider, UID ve email alanları gerekli'
       })
     }
 
-    // Kullanıcıyı email'e göre bul
-    let user = await User.findOne({ email })
+    // Kullanıcıyı provider'a göre bul
+    const query = {}
+    query[`socialProviders.${provider}.uid`] = uid
 
-    if (!user) {
+    let user = await User.findOne({
+      $or: [
+        query,
+        { email }
+      ]
+    })
+
+    if (user) {
+      // Eğer mevcut provider'ı bağlı değilse, bağla
+      if (!user.socialProviders[provider]?.connected) {
+        user.socialProviders[provider] = {
+          uid,
+          email,
+          avatar: avatar || '',
+          connected: true
+        }
+        // Avatar güncelle eğer yoksa
+        if (!user.avatar && avatar) {
+          user.avatar = avatar
+        }
+        await user.save()
+      }
+    } else {
       // Yeni kullanıcı oluştur
       user = await User.create({
         name: name || email.split('@')[0],
         email,
-        password: Math.random().toString(36).slice(-8) + uid.slice(-8), // Random password
-        phone: '0000000000', // Placeholder
+        phone: '', // Social users don't have phone initially
         avatar: avatar || '',
-        socialAuth: {
-          [provider]: uid
+        socialProviders: {
+          [provider]: {
+            uid,
+            email,
+            avatar: avatar || '',
+            connected: true
+          }
         }
       })
-    } else {
-      // Mevcut kullanıcıya social auth bilgisi ekle
-      if (!user.socialAuth) {
-        user.socialAuth = {}
+
+      // Loyalty Program otomatik oluştur
+      try {
+        const LoyaltyProgram = require('../models/LoyaltyProgram')
+        await LoyaltyProgram.create({
+          userId: user._id,
+          totalPoints: 0,
+          currentPoints: 0,
+          tier: 'bronze',
+          joinDate: new Date()
+        })
+      } catch (loyaltyError) {
+        // Loyalty program oluşturulamazsa continue et
+        console.log('Loyalty program oluşturulamadı:', loyaltyError.message)
       }
-      user.socialAuth[provider] = uid
-      
-      // Avatar yoksa güncelle
-      if (!user.avatar && avatar) {
-        user.avatar = avatar
-      }
-      
-      await user.save()
     }
 
     // Token gönder

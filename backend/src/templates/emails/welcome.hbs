@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoş Geldin!</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 32px;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .content h2 {
+            color: #333333;
+            font-size: 24px;
+            margin-top: 0;
+        }
+        .content p {
+            color: #666666;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        .discount-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin: 30px 0;
+        }
+        .discount-code {
+            background-color: #ffffff;
+            color: #667eea;
+            font-size: 24px;
+            font-weight: bold;
+            padding: 15px 30px;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 10px 0;
+            letter-spacing: 2px;
+        }
+        .discount-text {
+            color: #ffffff;
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        .button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin: 20px 0;
+            font-size: 16px;
+        }
+        .features {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+        }
+        .feature {
+            text-align: center;
+            flex: 1;
+            padding: 0 10px;
+        }
+        .feature-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        .feature-title {
+            color: #333333;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .feature-desc {
+            color: #666666;
+            font-size: 14px;
+        }
+        .footer {
+            background-color: #f9f9f9;
+            padding: 30px;
+            text-align: center;
+            color: #999999;
+            font-size: 14px;
+        }
+        .social-links {
+            margin: 20px 0;
+        }
+        .social-links a {
+            display: inline-block;
+            margin: 0 10px;
+            color: #667eea;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🎉 Hoş Geldin!</h1>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <h2>Merhaba {{name}}! 👋</h2>
+            <p>
+                MyShop ailesine katıldığın için çok mutluyuz! Binlerce kaliteli ürün arasından istediğini seç, 
+                hızlı kargo ile kapında bul. Alışverişin keyfini çıkar!
+            </p>
+
+            <!-- Discount Box -->
+            <div class="discount-box">
+                <div class="discount-text">🎁 Sana Özel İlk Alışveriş Hediyemiz</div>
+                <div class="discount-code">{{discountCode}}</div>
+                <div class="discount-text">%{{discountAmount}} İNDİRİM</div>
+            </div>
+
+            <p style="text-align: center;">
+                <a href="{{websiteUrl}}" class="button">Alışverişe Başla</a>
+            </p>
+
+            <!-- Features -->
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">🚚</div>
+                    <div class="feature-title">Hızlı Kargo</div>
+                    <div class="feature-desc">Aynı gün kargo seçeneği</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🔒</div>
+                    <div class="feature-title">Güvenli Ödeme</div>
+                    <div class="feature-desc">256-bit SSL şifreleme</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">↩️</div>
+                    <div class="feature-title">Kolay İade</div>
+                    <div class="feature-desc">15 gün içinde ücretsiz</div>
+                </div>
+            </div>
+
+            <p>
+                Sorularını yanıtlamak için her zaman buradayız. Müşteri hizmetlerimize 
+                <a href="{{websiteUrl}}/contact">buradan</a> ulaşabilirsin.
+            </p>
+
+            <p style="color: #999999; font-size: 14px;">
+                <em>Not: Bu indirim kodu sadece ilk alışverişinde geçerlidir ve 30 gün içinde kullanılmalıdır.</em>
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="social-links">
+                <a href="#">Facebook</a> |
+                <a href="#">Instagram</a> |
+                <a href="#">Twitter</a>
+            </div>
+            <p>© 2026 MyShop. Tüm hakları saklıdır.</p>
+            <p>
+                <a href="{{websiteUrl}}/unsubscribe" style="color: #999999;">E-posta bildirimlerinden çık</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

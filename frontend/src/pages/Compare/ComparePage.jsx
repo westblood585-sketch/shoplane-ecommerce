@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom'
+import { memo } from 'react'
 import { X, ShoppingCart, Star } from 'lucide-react'
 import Navbar from '../../components/layout/Navbar'
 import Footer from '../../components/layout/Footer'
 import useCompareStore from '../../store/compareStore'
 import useCartStore from '../../store/cartStore'
 
-function ComparePage() {
+const ComparePage = memo(function ComparePage() {
   const { compareList, toggleCompare, clearCompare } = useCompareStore()
   const { addItem } = useCartStore()
 
@@ -224,6 +225,6 @@ function ComparePage() {
       <Footer />
     </div>
   )
-}
+})
 
 export default ComparePage

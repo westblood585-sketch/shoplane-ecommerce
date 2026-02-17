@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sipariş Onayı - Hediye Paketi</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 32px;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .gift-banner {
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: center;
+            border: 2px dashed #ec4899;
+        }
+
+        .gift-icon {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+
+        .gift-card {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 15px 0;
+            border: 2px solid #ec4899;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .gift-message {
+            background-color: #fffbeb;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #f59e0b;
+            font-style: italic;
+            color: #92400e;
+        }
+
+        .product-item {
+            display: flex;
+            padding: 20px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .product-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 15px;
+        }
+
+        .button {
+            display: inline-block;
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .footer {
+            background-color: #f9f9f9;
+            padding: 30px;
+            text-align: center;
+            color: #999999;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🎁 Hediye Paketli Sipariş!</h1>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <h2 style="text-align: center; color: #333333;">Merhaba {{name}}! 👋</h2>
+            <p style="text-align: center; font-size: 18px; color: #666666;">
+                Hediye paketli siparişin alındı ve özenle hazırlanıyor!
+            </p>
+
+            <!-- Order Number -->
+            <div
+                style="background-color: #f0fdf4; border-left: 4px solid #10b981; padding: 20px; margin: 20px 0; border-radius: 8px; text-align: center;">
+                <p style="margin: 0; color: #065f46; font-size: 18px;">
+                    <strong>Sipariş No: #{{orderNumber}}</strong>
+                </p>
+            </div>
+
+            <!-- Gift Wrap Banner -->
+            <div class="gift-banner">
+                <div class="gift-icon">{{giftWrap.icon}}</div>
+                <h3 style="margin: 10px 0; color: #be185d;">{{giftWrap.name}}</h3>
+                <p style="margin: 5px 0; color: #9f1239;">{{giftWrap.description}}</p>
+                <p style="margin: 10px 0; font-size: 18px; font-weight: bold; color: #be185d;">
+                    +{{giftWrap.price}}₺
+                </p>
+            </div>
+
+            <!-- Gift Message Card -->
+            {{#if giftWrap.message}}
+            <div class="gift-card">
+                <h4 style="margin: 0 0 15px 0; color: #ec4899; text-align: center;">💌 Hediye Kartı</h4>
+                <div class="gift-message">
+                    <p style="margin: 0; font-size: 16px; line-height: 1.6;">
+                        {{giftWrap.message}}
+                    </p>
+                </div>
+                <div
+                    style="display: flex; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 1px solid #fce7f3;">
+                    <div>
+                        <p style="margin: 0; color: #9ca3af; font-size: 12px;">Kimden</p>
+                        <p style="margin: 5px 0 0 0; color: #4b5563; font-weight: bold;">{{giftWrap.from}}</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <p style="margin: 0; color: #9ca3af; font-size: 12px;">Kime</p>
+                        <p style="margin: 5px 0 0 0; color: #4b5563; font-weight: bold;">{{giftWrap.to}}</p>
+                    </div>
+                </div>
+            </div>
+            {{/if}}
+
+            <!-- Products -->
+            <h3 style="color: #333333;">Paketlenecek Ürünler:</h3>
+            {{#each items}}
+            <div class="product-item">
+                <img src="{{image}}" alt="{{name}}" class="product-image">
+                <div style="flex: 1;">
+                    <p style="font-weight: bold; margin: 0; color: #333333;">{{name}}</p>
+                    <p style="color: #666666; margin: 5px 0;">Adet: {{quantity}}</p>
+                    <p style="font-weight: bold; color: #ec4899; margin: 5px 0;">{{price}}₺</p>
+                </div>
+            </div>
+            {{/each}}
+
+            <!-- Total -->
+            <div style="background-color: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                    <span style="color: #666666;">Ara Toplam:</span>
+                    <span style="font-weight: bold; color: #333333;">{{subtotal}}₺</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                    <span style="color: #666666;">🎁 Hediye Paketi:</span>
+                    <span style="font-weight: bold; color: #ec4899;">+{{giftWrap.price}}₺</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                    <span style="color: #666666;">Kargo:</span>
+                    <span style="font-weight: bold; color: #10b981;">
+                        {{#if freeShipping}}ÜCRETSİZ{{else}}{{shippingPrice}}₺{{/if}}
+                    </span>
+                </div>
+                <div
+                    style="display: flex; justify-content: space-between; margin: 10px 0; padding-top: 10px; border-top: 2px solid #e5e7eb;">
+                    <span style="font-size: 18px; font-weight: bold; color: #333333;">TOPLAM:</span>
+                    <span style="font-size: 20px; font-weight: bold; color: #ec4899;">{{totalPrice}}₺</span>
+                </div>
+            </div>
+
+            <!-- Shipping Address -->
+            <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h4 style="margin: 0 0 10px 0; color: #333333;">📍 Teslimat Adresi:</h4>
+                <p style="margin: 0; color: #666666; line-height: 1.6;">
+                    {{shippingAddress.fullName}}<br>
+                    {{shippingAddress.address}}<br>
+                    {{shippingAddress.district}} / {{shippingAddress.city}}<br>
+                    {{shippingAddress.phone}}
+                </p>
+            </div>
+
+            <!-- Special Note -->
+            <div
+                style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 20px; margin: 20px 0; border-radius: 8px;">
+                <p style="margin: 0; color: #92400e;">
+                    <strong>✨ Özel Not:</strong> Siparişiniz özenle hediye paketi içinde hazırlanacak ve
+                    kartınız ile birlikte gönderilecektir. Pakette hiçbir fiyat etiketi olmayacaktır.
+                </p>
+            </div>
+
+            <p style="text-align: center;">
+                <a href="{{trackingUrl}}" class="button">Siparişi Takip Et</a>
+            </p>
+
+            <p style="color: #666666; text-align: center; margin-top: 30px;">
+                Hediye paketiniz ile ilgili sorularınız için müşteri hizmetlerimize ulaşabilirsiniz.
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Sorularınız için: <a href="mailto:destek@myshop.com">destek@myshop.com</a></p>
+            <p>© 2026 MyShop. Tüm hakları saklıdır.</p>
+        </div>
+    </div>
+</body>
+
+</html>

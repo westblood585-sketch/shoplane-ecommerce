@@ -1,6 +1,8 @@
+const { v4: uuidv4 } = require('uuid')
 const Order = require('../models/Order')
 const Product = require('../models/Product')
 const User = require('../models/User')
+const analyticsService = require('../services/analyticsService')
 
 // @desc    Dashboard istatistikleri
 // @route   GET /api/analytics/dashboard
@@ -186,6 +188,217 @@ exports.getSalesReport = async (req, res, next) => {
       success: true,
       period,
       data: salesData
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+// @desc    Track heatmap data
+// @route   POST /api/analytics/heatmap
+// @access  Public
+exports.trackHeatmap = async (req, res, next) => {
+  try {
+    const {
+      page,
+      url,
+      type,
+      x,
+      y,
+      value,
+      element,
+      viewport,
+      sessionId
+    } = req.body
+
+    const userId = req.user?.id
+    const anonymousId = req.cookies.anonymousId || req.headers['x-anonymous-id']
+
+    const sessionInfo = {
+      sessionId,
+      user: userId,
+      anonymousId,
+      timestamp: Date.now()
+    }
+
+    await analyticsService.trackHeatmapData(
+      page,
+      url,
+      type,
+      x,
+      y,
+      value,
+      element,
+      viewport,
+      sessionInfo
+    )
+
+    res.status(200).json({
+      success: true,
+      message: 'Heatmap data tracked'
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+// @desc    Get heatmap data
+// @route   GET /api/analytics/heatmap/:page/:type
+// @access  Private/Admin
+exports.getHeatmap = async (req, res, next) => {
+  try {
+    const { page, type } = req.params
+    const { startDate, endDate } = req.query
+
+    const heatmap = await analyticsService.getHeatmapData(
+      page,
+      type,
+      startDate,
+      endDate
+    )
+
+    res.status(200).json({
+      success: true,
+      heatmap
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+// @desc    Start session recording
+// @route   POST /api/analytics/session/start
+// @access  Public
+exports.startSession = async (req, res, next) => {
+  try {
+    let { sessionId, deviceInfo } = req.body
+
+    // Generate sessionId if not provided
+    if (!sessionId) {
+      sessionId = uuidv4()
+    }
+
+    const userId = req.user?.id
+    const anonymousId = req.cookies.anonymousId || req.headers['x-anonymous-id']
+
+    const recording = await analyticsService.createSession(
+      sessionId,
+      userId,
+      anonymousId,
+      deviceInfo
+    )
+
+    if (!recording) {
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to create session'
+      })
+    }
+
+    res.status(200).json({
+      success: true,
+      sessionId: recording.sessionId
+    })
+  } catch (error) {
+    console.error('Start session error:', error.message)
+    return res.status(400).json({
+      success: false,
+      message: error.message
+    })
+  }
+}
+
+// @desc    Track session event
+// @route   POST /api/analytics/session/event
+// @access  Public
+exports.trackSessionEvent = async (req, res, next) => {
+  try {
+    const { sessionId, event } = req.body
+
+    await analyticsService.addSessionEvent(sessionId, event)
+
+    res.status(200).json({
+      success: true,
+      message: 'Event tracked'
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+// @desc    End session
+// @route   POST /api/analytics/session/end
+// @access  Public
+exports.endSession = async (req, res, next) => {
+  try {
+    const { sessionId, converted, conversionValue } = req.body
+
+    await analyticsService.endSession(sessionId, converted, conversionValue)
+
+    res.status(200).json({
+      success: true,
+      message: 'Session ended'
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+// @desc    Get session replay
+// @route   GET /api/analytics/session/:sessionId
+// @access  Private/Admin
+exports.getSessionReplay = async (req, res, next) => {
+  try {
+    const { sessionId } = req.params
+
+    const replay = await analyticsService.getSessionReplay(sessionId)
+
+    if (!replay) {
+      return res.status(404).json({
+        success: false,
+        message: 'Session bulunamadı'
+      })
+    }
+
+    res.status(200).json({
+      success: true,
+      replay
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+// @desc    Get sessions list
+// @route   GET /api/analytics/sessions
+// @access  Private/Admin
+exports.getSessions = async (req, res, next) => {
+  try {
+    const filters = req.query
+
+    const result = await analyticsService.getSessions(filters)
+
+    res.status(200).json({
+      success: true,
+      ...result
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+// @desc    Get insights
+// @route   GET /api/analytics/insights/:page
+// @access  Private/Admin
+exports.getInsights = async (req, res, next) => {
+  try {
+    const { page } = req.params
+
+    const insights = await analyticsService.generateInsights(page)
+
+    res.status(200).json({
+      success: true,
+      insights
     })
   } catch (error) {
     next(error)

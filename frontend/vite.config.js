@@ -29,11 +29,24 @@ export default defineConfig({
     })
   ],
   server: {
-    port: 5173,
+    host: '127.0.0.1',
+    port: 5178,
+    // HMR configuration for WebSocket connections
+    hmr: {
+      protocol: 'ws',
+      port: 5178
+    },
+    watch: {
+      usePolling: false
+    },
     proxy: {
       '/api': {
-        target: 'http://localhost:5001',
-        changeOrigin: true
+        target: 'http://127.0.0.1:5001',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path,
+        // Don't proxy WebSocket connections
+        ws: false
       }
     }
   },

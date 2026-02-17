@@ -4,26 +4,79 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="MyShop - Modern E-ticaret Platformu, 570+ Ürün, PWA, Karanlık Mod ve Daha Fazlası" />
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="MyShop - Modern E-ticaret Platformu, 570+ Ürün, PWA, Karanlık Mod ve Daha Fazlası. Hızlı, güvenli ve kolay alışveriş deneyimi." />
+    <meta name="keywords" content="e-ticaret, online alışveriş, ürünler, elektronik, giyim, ayakkabı, spor, ev, kozmetik" />
+    <meta name="author" content="MyShop">
     <meta name="theme-color" content="#1e40af" />
+    
+    <!-- Canonical Tag (Duplicate Content Önleme) -->
+    <link rel="canonical" href="https://your-domain.com/">
+    
+    <!-- Open Graph (Facebook, Instagram, WhatsApp Link Preview) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="MyShop - E-Ticaret Platformu" />
+    <meta property="og:description" content="570+ ürün, PWA desteği, karanlık mod ve daha fazlası. Sıfır ücretle profesyonel e-ticaret deneyimi." />
+    <meta property="og:url" content="https://your-domain.com/" />
+    <meta property="og:image" content="https://your-domain.com/og-image.svg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:site_name" content="MyShop" />
+    <meta property="og:locale" content="tr_TR" />
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="MyShop - E-Ticaret Platformu" />
+    <meta name="twitter:description" content="570+ ürün, PWA, karanlık mod. Sıfır ücretle profesyonel alışveriş." />
+    <meta name="twitter:image" content="https://your-domain.com/og-image.svg" />
+    <meta name="twitter:creator" content="@myshop" />
+    
     <!-- Google Search Console Verification -->
     <meta name="google-site-verification" content="tJUa4nmYFdaGuxCw-XE5FCId2iZSD-vfCdWdIECIlrI" />
+    
+    <!-- Apple Meta Tags (iOS) -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="MyShop" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
     <title>MyShop - E-Ticaret Platformu</title>
     
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <!-- Google Analytics (Production: Uncomment and add your GA_ID) -->
+    <!-- 
+    <script async src="https://www.googletagmanager.com/gtag/js?id=YOUR_GA_ID"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-XXXXXXXXXX', {
+      gtag('config', 'YOUR_GA_ID', {
         'anonymize_ip': true,
         'cookie_domain': 'auto'
       });
     </script>
+    -->
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    
+    <!-- Service Worker Registration (PWA) -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js').then(registration => {
+            console.log('✅ Service Worker registered:', registration);
+          }).catch(error => {
+            console.log('Service Worker registration failed:', error);
+          });
+        });
+      }
+    </script>
   </body>
 </html>

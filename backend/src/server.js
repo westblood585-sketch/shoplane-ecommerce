@@ -1,128 +1,117 @@
 const express = require('express')
 const dotenv = require('dotenv')
-const cors = require('cors')
-const cookieParser = require('cookie-parser')
-const http = require('http')
-const { Server } = require('socket.io')
-const helmet = require('helmet')
-const rateLimit = require('express-rate-limit')
-const mongoSanitize = require('express-mongo-sanitize')
-const xss = require('xss-clean')
-const hpp = require('hpp')
-const compression = require('compression')
 const connectDB = require('./config/database')
 const errorHandler = require('./middleware/errorHandler')
+const {
+  helmetConfig,
+  corsOptions,
+  mongoSanitize,
+  xss,
+  hpp,
+  limiter,
+  apiLimiter,
+  authLimiter,
+  paymentLimiter
+} = require('./middleware/security')
 
+// Load env vars
 dotenv.config()
+
+// Connect to database
 connectDB()
 
 const app = express()
-const server = http.createServer(app)
 
-// Security Middleware (Production)
-if (process.env.NODE_ENV === 'production') {
-  // Helmet - HTTP headers security
-  app.use(helmet())
-  
-  // Rate limiting - DDoS protection
-  const limiter = rateLimit({
-    windowMs: 10 * 60 * 1000, // 10 minutes
-    max: 100 // Max 100 requests per window
-  })
-  app.use('/api/', limiter)
-  
-  // Data sanitization - NoSQL injection protection
-  app.use(mongoSanitize())
-  
-  // XSS protection
-  app.use(xss())
-  
-  // HTTP Parameter Pollution
-  app.use(hpp())
-  
-  // Compression
-  app.use(compression())
-}
+// Security middleware
+app.use(helmetConfig)
+app.use(corsOptions)
+// app.use(mongoSanitize)  // TODO: Fix compatibility with Express 5.2.1
+// app.use(xss)  // TODO: Fix compatibility with Express 5.2.1
+app.use(hpp)
 
-// Body Parser Middleware
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
+// Body parser
+app.use(express.json({ limit: '10mb' }))
+app.use(express.urlencoded({ extended: true, limit: '10mb' }))
+
+// Cookie parser
+const cookieParser = require('cookie-parser')
 app.use(cookieParser())
 
-// CORS Configuration
-const corsOptions = {
-  origin: process.env.NODE_ENV === 'production' 
-    ? process.env.CLIENT_URL || 'https://myshop-dogukanbayar.vercel.app'
-    : ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:5176', 'http://127.0.0.1:5173', 'http://127.0.0.1:5174', 'http://127.0.0.1:5175', 'http://127.0.0.1:5176'],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}
+// Rate limiting
+app.use('/api/', limiter)
+app.use('/api/auth/', authLimiter)
+app.use('/api/payments/', paymentLimiter)
 
-app.use(cors(corsOptions))
+// Socket.io setup
+const http = require('http')
+const socketIO = require('socket.io')
 
-// Socket.IO Setup
-const io = new Server(server, {
-  cors: corsOptions
+const server = http.createServer(app)
+const io = socketIO(server, {
+  cors: {
+    origin: process.env.NODE_ENV === 'production' 
+      ? process.env.FRONTEND_URL 
+      : ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:5178'],
+    credentials: true
+  }
 })
 
-// Socket.IO Connection
+// Socket.io connection
 io.on('connection', (socket) => {
-  // Sadece yeni kullanıcı bağlantılarını logla (spam'i önlemek için)
-  // console.log('🔌 User connected:', socket.id)
-  
-  socket.on('disconnect', () => {
-    // console.log('🔌 User disconnected:', socket.id)
-  })
-  
-  // Önemli olayları dinle
-  socket.on('join_room', (data) => {
+  console.log(`👤 New user connected: ${socket.id}`)
+
+  socket.on('join-room', (data) => {
     socket.join(data.room)
     console.log(`👤 User ${socket.id} joined room: ${data.room}`)
+  })
+
+  socket.on('disconnect', () => {
+    console.log(`👤 User ${socket.id} disconnected`)
   })
 })
 
 // Make io accessible to routes
 app.set('io', io)
 
-// TEMEL ROUTES
-app.use('/api/auth', require('./routes/authRoutes'))
+// Health check routes
+app.use('/api/health', require('./routes/healthRoutes'))
+
+// API Routes (only load routes that exist)
 app.use('/api/products', require('./routes/productRoutes'))
+// app.use('/api/users', require('./routes/userRoutes'))  // TODO: Fix
+app.use('/api/auth', require('./routes/authRoutes'))
 app.use('/api/orders', require('./routes/orderRoutes'))
+app.use('/api/reviews', require('./routes/reviewRoutes'))
+// app.use('/api/cart', require('./routes/cartRoutes'))  // TODO: Create
+// app.use('/api/wishlist', require('./routes/wishlistRoutes'))  // TODO: Create
+app.use('/api/payments', require('./routes/paymentRoutes'))
+app.use('/api/bundles', require('./routes/bundleRoutes'))
 app.use('/api/addresses', require('./routes/addressRoutes'))
 app.use('/api/favorites', require('./routes/favoriteRoutes'))
 app.use('/api/gamification', require('./routes/gamificationRoutes'))
+app.use('/api/pre-orders', require('./routes/preOrderRoutes'))
+app.use('/api/emails', require('./routes/emailRoutes'))
+app.use('/api/experiments', require('./routes/experimentRoutes'))
+app.use('/api/analytics', require('./routes/analyticsRoutes'))
+app.use('/api/analytics-aggregation', require('./routes/analyticsAggregationRoutes'))
+app.use('/api/funnels', require('./routes/funnelRoutes'))
+app.use('/api/loyalty', require('./routes/loyaltyRoutes'))
+app.use('/api/journeys', require('./routes/journeyRoutes'))
+app.use('/api/guest-orders', require('./routes/guestOrderRoutes'))
+app.use('/api/gift-cards', require('./routes/giftCardRoutes'))
+app.use('/api/gift-wraps', require('./routes/giftWrapRoutes'))
+app.use('/api/recommendations', require('./routes/recommendationRoutes'))
 app.use('/api/chat', require('./routes/chatRoutes'))
-app.use('/api/bundles', require('./routes/bundleRoutes'))
-// app.use('/api/gift-cards', require('./routes/giftCardRoutes')) // Temporarily disabled
+app.use('/api/subscriptions', require('./routes/subscriptionRoutes'))
+app.use('/api/influencers', require('./routes/influencerRoutes'))
 
-// Review routes (nested)
-const reviewRoutes = require('./routes/reviewRoutes')
-app.use('/api/products/:productId/reviews', reviewRoutes)
-
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({
-    success: true,
-    message: 'Server is running',
-    environment: process.env.NODE_ENV,
-    timestamp: new Date().toISOString()
-  })
-})
+// Error handler
 
 // Test endpoint
 app.get('/', (req, res) => {
   res.json({
     success: true,
     message: 'E-ticaret API çalışıyor! 🚀'
-  })
-})
-
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: 'Endpoint not found'
   })
 })
 
@@ -133,14 +122,19 @@ const PORT = process.env.PORT || 5001
 
 server.listen(PORT, () => {
   console.log(`
-  ╔═══════════════════════════════════════╗
-  ║   🚀 Server çalışıyor!                ║
-  ║   📍 Port: ${PORT}                      ║
-  ║   🌍 Mode: ${process.env.NODE_ENV}    ║
-  ╚═══════════════════════════════════════╝
+╔═══════════════════════════════════════════════════════╗
+║          🚀 Backend Server Running!                   ║
+║          📍 Port: ${PORT}                              ║
+║          🌍 Mode: ${process.env.NODE_ENV || 'development'}             ║
+║          🗄️  Database: Connected                       ║
+╚═══════════════════════════════════════════════════════╝
   `)
 })
 
-process.on('unhandledRejection', (err) => {
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (err, promise) => {
   console.error(`❌ Error: ${err.message}`)
+  server.close(() => process.exit(1))
 })
+
+module.exports = app

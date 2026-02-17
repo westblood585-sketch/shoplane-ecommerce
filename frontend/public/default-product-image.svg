@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" fill="none">
+  <rect width="500" height="500" fill="#f3f4f6"/>
+  <g opacity="0.5">
+    <circle cx="150" cy="150" r="40" fill="#9ca3af"/>
+    <path d="M 50 300 L 200 150 L 300 220 L 450 70" stroke="#9ca3af" stroke-width="40" stroke-linecap="round" stroke-linejoin="round"/>
+    <polygon points="450,500 450,300 500,300 500,500" fill="#9ca3af"/>
+  </g>
+  <text x="250" y="450" font-size="24" fill="#6b7280" text-anchor="middle" font-family="system-ui">
+    Görsel Yok
+  </text>
+</svg>

@@ -1,15 +1,19 @@
+import { useMetaDescription, metaDescriptions } from '../../utils/metaDescriptions'
 import Navbar from '../../components/layout/Navbar'
 import Footer from '../../components/layout/Footer'
 import BottomNav from '../../components/layout/BottomNav'
 import CartItem from '../../components/Cart/CartItem'
 import CartSummary from '../../components/Cart/CartSummary'
 import EmptyCart from '../../components/Cart/EmptyCart'
+import { Package, Trash2, ArrowLeft } from 'lucide-react'
 import useCartStore from '../../store/cartStore'
 import { Link } from 'react-router-dom'
-import { ArrowLeft, Trash2 } from 'lucide-react'
 
 function CartPage() {
-  const { items, clearCart } = useCartStore()
+  const { items, bundles, removeBundleFromCart, updateBundleQuantity, clearCart } = useCartStore()
+  
+  // Set optimized meta description for SEO
+  useMetaDescription(metaDescriptions.cart.description.replace('{itemCount}', items.length + (bundles.length || 0)), metaDescriptions.cart.title)
 
   const handleClearCart = () => {
     if (confirm('Sepetinizdeki tüm ürünleri silmek istediğinizden emin misiniz?')) {
@@ -71,32 +75,121 @@ function CartPage() {
               </div>
             </div>
 
-            {/* Güven Bildirimleri */}
-            <div className="mt-12 grid md:grid-cols-3 gap-6">
-              <div className="bg-white rounded-xl p-6 text-center shadow-md">
-                <div className="text-4xl mb-3">🚚</div>
-                <h3 className="font-bold mb-2">Hızlı Kargo</h3>
-                <p className="text-sm text-gray-600">
-                  Siparişiniz 1-3 iş günü içinde kapınızda
-                </p>
+            {/* Bundles Section */}
+            {bundles.length > 0 && (
+              <div className="mb-8">
+                <div className="flex items-center gap-3 mb-4">
+                  <Package size={28} className="text-purple-600" />
+                  <h2 className="text-2xl font-bold dark:text-dark-text">
+                    Bundles ({bundles.length})
+                  </h2>
+                </div>
+                <div className="space-y-4">
+                  {bundles.map((bundleItem, index) => (
+                    <div
+                      key={index}
+                      className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border border-purple-200 dark:border-purple-900 rounded-2xl p-6"
+                    >
+                      <div className="flex items-start gap-4">
+                        {/* Bundle Image */}
+                        <div className="w-24 h-24 rounded-xl overflow-hidden flex-shrink-0 bg-white dark:bg-dark-card">
+                          {bundleItem.bundle.images?.[0] ? (
+                            <img
+                              src={bundleItem.bundle.images[0]}
+                              alt={bundleItem.bundle.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <Package size={40} className="text-gray-400" />
+                            </div>
+                          )}
+                        </div>
+                        {/* Bundle Info */}
+                        <div className="flex-1">
+                          <h3 className="text-lg font-bold mb-2 dark:text-dark-text">
+                            {bundleItem.bundle.name}
+                          </h3>
+                          {/* Products in Bundle */}
+                          <div className="mb-3">
+                            <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">
+                              Includes:
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                              {bundleItem.bundle.products.map((item, idx) => (
+                                <span
+                                  key={idx}
+                                  className="px-2 py-1 bg-white dark:bg-dark-card rounded text-xs"
+                                >
+                                  {item.product.name} x{item.quantity}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                          {/* Price & Savings */}
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-2xl font-bold text-purple-600">
+                              {bundleItem.price.toFixed(2)}₺
+                            </span>
+                            {bundleItem.bundle.pricing.originalPrice !== bundleItem.bundle.pricing.finalPrice && (
+                              <>
+                                <span className="text-lg text-gray-500 line-through">
+                                  {bundleItem.bundle.pricing.originalPrice.toFixed(2)}₺
+                                </span>
+                                <span className="text-sm font-semibold text-green-600">
+                                  Save {bundleItem.bundle.pricing.savings.toFixed(2)}₺
+                                </span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                        {/* Quantity Controls */}
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => updateBundleQuantity(
+                              bundleItem.bundle._id,
+                              bundleItem.selectedProducts,
+                              bundleItem.quantity - 1
+                            )}
+                            className="w-8 h-8 bg-white dark:bg-dark-card border-2 border-gray-200 dark:border-dark-border rounded-lg hover:bg-gray-100 dark:hover:bg-dark-hover transition"
+                          >
+                            -
+                          </button>
+                          <span className="w-12 text-center font-bold dark:text-dark-text">
+                            {bundleItem.quantity}
+                          </span>
+                          <button
+                            onClick={() => updateBundleQuantity(
+                              bundleItem.bundle._id,
+                              bundleItem.selectedProducts,
+                              bundleItem.quantity + 1
+                            )}
+                            className="w-8 h-8 bg-white dark:bg-dark-card border-2 border-gray-200 dark:border-dark-border rounded-lg hover:bg-gray-100 dark:hover:bg-dark-hover transition"
+                          >
+                            +
+                          </button>
+                        </div>
+                        {/* Total & Remove */}
+                        <div className="text-right">
+                          <p className="text-2xl font-bold mb-2 dark:text-dark-text">
+                            {(bundleItem.price * bundleItem.quantity).toFixed(2)}₺
+                          </p>
+                          <button
+                            onClick={() => removeBundleFromCart(
+                              bundleItem.bundle._id,
+                              bundleItem.selectedProducts
+                            )}
+                            className="text-red-600 hover:text-red-700 transition"
+                          >
+                            <Trash2 size={20} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-
-              <div className="bg-white rounded-xl p-6 text-center shadow-md">
-                <div className="text-4xl mb-3">🔒</div>
-                <h3 className="font-bold mb-2">Güvenli Ödeme</h3>
-                <p className="text-sm text-gray-600">
-                  256-bit SSL sertifikası ile korunan ödeme
-                </p>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 text-center shadow-md">
-                <div className="text-4xl mb-3">↩️</div>
-                <h3 className="font-bold mb-2">14 Gün İade</h3>
-                <p className="text-sm text-gray-600">
-                  Koşulsuz iade garantisi
-                </p>
-              </div>
-            </div>
+            )}
           </>
         )}
       </div>

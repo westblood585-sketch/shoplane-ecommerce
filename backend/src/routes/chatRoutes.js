@@ -1,23 +1,22 @@
 const express = require('express')
 const router = express.Router()
-const { protect } = require('../middleware/auth')
 const {
-  startChat,
+  getOrCreateChat,
   sendMessage,
-  getChatHistory,
-  getUserChats,
-  closeChat,
-  deleteChat
+  getAllChats,
+  sendAdminMessage,
+  closeChat
 } = require('../controllers/chatController')
+const { protect, admin } = require('../middleware/auth')
 
-// Tüm routes protected (giriş lazım)
 router.use(protect)
 
-router.post('/start', startChat)
+router.get('/', getOrCreateChat)
 router.post('/message', sendMessage)
-router.get('/history/:chatId', getChatHistory)
-router.get('/list', getUserChats)
-router.put('/:chatId/close', closeChat)
-router.delete('/:chatId', deleteChat)
+
+// Admin routes
+router.get('/all', admin, getAllChats)
+router.post('/:chatId/admin-message', admin, sendAdminMessage)
+router.put('/:chatId/close', admin, closeChat)
 
 module.exports = router

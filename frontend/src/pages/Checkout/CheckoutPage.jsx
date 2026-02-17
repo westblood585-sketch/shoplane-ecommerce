@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react'
+import { useABTest } from '../../hooks/useABTest'
+import { useJourneyTracking } from '../../hooks/useJourneyTracking'
 import { useNavigate } from 'react-router-dom'
-import { CreditCard, MapPin, Truck, ChevronRight, Lock } from 'lucide-react'
+import { useMetaDescription, metaDescriptions } from '../../utils/metaDescriptions'
+import { CreditCard, MapPin, Truck, ChevronRight, Lock, Gift } from 'lucide-react'
 import Navbar from '../../components/layout/Navbar'
 import Footer from '../../components/layout/Footer'
 import BottomNav from '../../components/layout/BottomNav'
 import PaymentForm from '../../components/Payment/PaymentForm'
+import GiftWrapSelector from '../../components/giftwrap/GiftWrapSelector'
 import useCartStore from '../../store/cartStore'
 import useAddressStore from '../../store/addressStore'
 import useOrderStore from '../../store/orderStore'
@@ -13,6 +17,19 @@ import { paymentAPI } from '../../api/paymentAPI'
 import CompareFloatingButton from '../../components/common/CompareFloatingButton';
 
 function CheckoutPage() {
+  const { experiments, getVariant, getChanges, trackConversion } = useABTest('checkout')
+  const { trackTouchpoint } = useJourneyTracking()
+
+  // Set optimized meta description for SEO
+  useMetaDescription(metaDescriptions.checkout.description, metaDescriptions.checkout.title)
+
+  // Trust badges experiment
+  const trustVariant = getVariant('Checkout Trust Badges')
+  const trustChanges = getChanges('Checkout Trust Badges')
+
+  const showTrustBadges = trustChanges.showBadges !== false
+  const badgeStyle = trustChanges.badgeStyle || 'icons'
+  const badgePosition = trustChanges.badgePosition || 'top'
   const navigate = useNavigate()
   const { isAuthenticated, user } = useAuthStore()
   const { items, getSubtotal, getShipping, getDiscount, getTotal, clearCart, couponCode } = useCartStore()
@@ -25,6 +42,16 @@ function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState('creditCard')
   const [processing, setProcessing] = useState(false)
   const [error, setError] = useState(null)
+  const [giftWrap, setGiftWrap] = useState(null)
+
+  // Track checkout start
+  useEffect(() => {
+    trackTouchpoint('checkout_start', {
+      metadata: {
+        cartTotal: getSubtotal()
+      }
+    })
+  }, [])
 
   // Adresleri getir
   useEffect(() => {
@@ -100,88 +127,86 @@ function CheckoutPage() {
     return null
   }
 
-  // Sepet boşsa
-  if (items.length === 0) {
-    navigate('/cart')
-    return null
-  }
+  const selectedShippingOption = shippingOptions.find(o => o.id === selectedShipping) || shippingOptions[0]
 
-  // Adres yoksa
-  if (addresses.length === 0) {
-    navigate('/addresses')
-    return null
-  }
-
-  const selectedAddress = addresses.find(a => a._id === selectedAddressId)
-  const selectedShippingOption = shippingOptions.find(s => s.id === selectedShipping)
-
+  // Handle complete order with payment and purchase tracking
   const handleCompleteOrder = async (cardDetails, use3D) => {
-    setProcessing(true)
-    setError(null)
-
     try {
-      // Önce siparişi oluştur
+      setProcessing(true)
+      setError(null)
+
+      // Create order
       const orderData = {
         items: items.map(item => ({
           product: item._id,
           name: item.name,
-          image: item.image,
-          price: item.price,
           quantity: item.quantity,
+          price: item.price,
           size: item.size,
           color: item.color
         })),
-        shippingAddress: {
-          fullName: selectedAddress.fullName,
-          phone: selectedAddress.phone,
-          address: selectedAddress.address,
-          city: selectedAddress.city,
-          district: selectedAddress.district,
-          zipCode: selectedAddress.zipCode
-        },
-        paymentMethod: paymentMethods.find(p => p.id === paymentMethod).name,
+        shippingAddress: addresses.find(a => a._id === selectedAddressId),
+        paymentMethod: paymentMethod,
         subtotal: getSubtotal(),
         shippingPrice: selectedShippingOption.price,
         discount: getDiscount(),
-        totalPrice: getTotal() - getShipping() + selectedShippingOption.price,
-        couponCode: couponCode || undefined
+        totalPrice: getTotal() - getShipping() + selectedShippingOption.price + (giftWrap?.price || 0),
+        couponCode: couponCode || null,
+        giftWrap: giftWrap || null
       }
 
-      const result = await createOrder(orderData)
+      const orderResult = await createOrder(orderData)
 
-      if (result.success) {
-        // Ödemeyi başlat
-        if (use3D) {
-          // 3D Secure ödeme
-          const paymentResult = await paymentAPI.checkout3D(result.order._id, cardDetails)
-          
-          if (paymentResult.success) {
-            // 3D Secure sayfasını göster
-            const newWindow = window.open('', '_blank')
-            newWindow.document.write(paymentResult.threeDSHtmlContent)
-          } else {
-            setError(paymentResult.message || 'Ödeme başarısız')
-          }
-        } else {
-          // Normal ödeme
-          const paymentResult = await paymentAPI.checkout(result.order._id, cardDetails)
-          
-          if (paymentResult.success) {
-            clearCart()
-            navigate(`/order-success/${result.order._id}`)
-          } else {
-            setError(paymentResult.message || 'Ödeme başarısız')
-          }
+      if (orderResult.success) {
+        const order = orderResult.order
+
+        // Track purchase funnel event
+        if (window.trackFunnelEvent) {
+          window.trackFunnelEvent('purchase', {
+            orderId: order._id,
+            orderNumber: order.orderNumber,
+            total: order.totalPrice,
+            items: order.items.length
+          })
         }
+
+        // Track purchase journey touchpoint
+        if (window.trackJourneyTouchpoint) {
+          trackTouchpoint('purchase', {
+            order: order._id,
+            metadata: {
+              orderTotal: order.totalPrice,
+              items: order.items.length
+            }
+          })
+        }
+
+        // Track conversion for A/B test
+        trackConversion('Checkout')
+
+        // Clear cart
+        clearCart()
+
+        // Navigate to success page
+        navigate(`/order-success/${order._id}`)
       } else {
-        setError(result.error || 'Sipariş oluşturulamadı')
+        setError(orderResult.error || 'Sipariş oluşturulamadı')
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'İşlem başarısız')
+      setError(err.message || 'Bir hata oluştu')
     } finally {
       setProcessing(false)
     }
   }
+
+  const trustBadges = [
+    { icon: '🔒', text: 'Güvenli Ödeme' },
+    { icon: '🚚', text: 'Ücretsiz Kargo' },
+    { icon: '↩️', text: '14 Gün İade' },
+    { icon: '✅', text: '2 Yıl Garanti' }
+  ]
+
+
 
   return (
     <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
@@ -205,9 +230,8 @@ function CheckoutPage() {
           <div className="flex items-center justify-center">
             {/* Step 1 */}
             <div className="flex items-center">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${
-                step >= 1 ? 'bg-blue-600 text-white' : 'bg-gray-200'
-              }`}>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${step >= 1 ? 'bg-blue-600 text-white' : 'bg-gray-200'
+                }`}>
                 {step > 1 ? '✓' : '1'}
               </div>
               <span className={`ml-2 font-semibold ${step >= 1 ? 'text-blue-600' : 'text-gray-400'}`}>
@@ -219,9 +243,8 @@ function CheckoutPage() {
 
             {/* Step 2 */}
             <div className="flex items-center">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${
-                step >= 2 ? 'bg-blue-600 text-white' : 'bg-gray-200'
-              }`}>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${step >= 2 ? 'bg-blue-600 text-white' : 'bg-gray-200'
+                }`}>
                 {step > 2 ? '✓' : '2'}
               </div>
               <span className={`ml-2 font-semibold ${step >= 2 ? 'text-blue-600' : 'text-gray-400'}`}>
@@ -233,9 +256,8 @@ function CheckoutPage() {
 
             {/* Step 3 */}
             <div className="flex items-center">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${
-                step >= 3 ? 'bg-blue-600 text-white' : 'bg-gray-200'
-              }`}>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${step >= 3 ? 'bg-blue-600 text-white' : 'bg-gray-200'
+                }`}>
                 3
               </div>
               <span className={`ml-2 font-semibold ${step >= 3 ? 'text-blue-600' : 'text-gray-400'}`}>
@@ -260,11 +282,10 @@ function CheckoutPage() {
                   {addresses.map(address => (
                     <label
                       key={address._id}
-                      className={`block border-2 rounded-lg p-4 cursor-pointer transition ${
-                        selectedAddressId === address._id
+                      className={`block border-2 rounded-lg p-4 cursor-pointer transition ${selectedAddressId === address._id
                           ? 'border-blue-600 bg-blue-50'
                           : 'border-gray-200 hover:border-gray-300'
-                      }`}
+                        }`}
                     >
                       <input
                         type="radio"
@@ -330,11 +351,10 @@ function CheckoutPage() {
                   {shippingOptions.map(option => (
                     <label
                       key={option.id}
-                      className={`block border-2 rounded-lg p-4 cursor-pointer transition ${
-                        selectedShipping === option.id
+                      className={`block border-2 rounded-lg p-4 cursor-pointer transition ${selectedShipping === option.id
                           ? 'border-blue-600 bg-blue-50'
                           : 'border-gray-200 hover:border-gray-300'
-                      }`}
+                        }`}
                     >
                       <input
                         type="radio"
@@ -386,6 +406,20 @@ function CheckoutPage() {
             {/* STEP 3: Ödeme */}
             {step === 3 && (
               <div className="space-y-6">
+                {/* Gift Wrap Section - YENİ */}
+                <div className="bg-white rounded-xl shadow-md p-6">
+                  <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                    <Gift size={24} className="text-pink-600" />
+                    Hediye Paketi
+                  </h3>
+
+                  <GiftWrapSelector
+                    selectedWrap={giftWrap}
+                    onSelect={setGiftWrap}
+                    onRemove={() => setGiftWrap(null)}
+                  />
+                </div>
+
                 {/* Ödeme Bilgileri */}
                 <div className="bg-white rounded-xl shadow-md p-6">
                   <div className="flex items-center gap-2 mb-6">
@@ -393,7 +427,7 @@ function CheckoutPage() {
                     <h2 className="text-2xl font-bold">Ödeme Bilgileri</h2>
                   </div>
 
-                  <PaymentForm 
+                  <PaymentForm
                     onSubmit={handleCompleteOrder}
                     loading={processing}
                   />
@@ -484,6 +518,17 @@ function CheckoutPage() {
                     <span className="font-semibold">-₺{getDiscount().toFixed(2)}</span>
                   </div>
                 )}
+
+                {/* Gift Wrap in Summary */}
+                {giftWrap && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600 flex items-center gap-1">
+                      <Gift size={14} />
+                      Hediye Paketi
+                    </span>
+                    <span className="font-bold text-pink-600">+₺{giftWrap.price.toFixed(2)}</span>
+                  </div>
+                )}
               </div>
 
               {/* Toplam */}
@@ -491,8 +536,9 @@ function CheckoutPage() {
                 <span>Toplam:</span>
                 <span className="text-blue-600">
                   ₺{(
-                    getTotal() - getShipping() + 
-                    (step >= 2 ? selectedShippingOption.price : 0)
+                    getTotal() - getShipping() +
+                    (step >= 2 ? selectedShippingOption.price : 0) +
+                    (giftWrap?.price || 0)
                   ).toFixed(2)}
                 </span>
               </div>
@@ -504,9 +550,9 @@ function CheckoutPage() {
                   <span>Güvenli ödeme</span>
                 </div>
                 <div className="flex gap-2 mt-3">
-                  <img src="https://via.placeholder.com/50x30?text=VISA" alt="Visa" className="h-6" />
-                  <img src="https://via.placeholder.com/50x30?text=MC" alt="Mastercard" className="h-6" />
-                  <img src="https://via.placeholder.com/50x30?text=TROY" alt="Troy" className="h-6" />
+                  <img src="/visa-icon.svg" alt="Visa" className="h-6" />
+                  <img src="/mastercard-icon.svg" alt="Mastercard" className="h-6" />
+                  <img src="/troy-icon.svg" alt="Troy" className="h-6" />
                 </div>
               </div>
             </div>

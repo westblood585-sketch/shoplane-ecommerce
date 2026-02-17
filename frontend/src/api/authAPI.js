@@ -5,12 +5,12 @@ export const authAPI = {
   register: async (userData) => {
     try {
       const response = await API.post('/auth/register', userData)
-      
+
       // Data ve token'ı kontrol et
       if (response?.data?.token) {
         localStorage.setItem('token', response.data.token)
       }
-      
+
       return response?.data || { success: false, message: 'Geçersiz sunucu yanıtı' }
     } catch (error) {
       console.error('authAPI.register Error:', error)
@@ -28,6 +28,20 @@ export const authAPI = {
       return response?.data || { success: false, message: 'Geçersiz sunucu yanıtı' }
     } catch (error) {
       console.error('authAPI.login Error:', error)
+      throw error
+    }
+  },
+
+  // Social Login
+  socialLogin: async (providerData) => {
+    try {
+      const response = await API.post('/auth/social-login', providerData)
+      if (response?.data?.token) {
+        localStorage.setItem('token', response.data.token)
+      }
+      return response
+    } catch (error) {
+      console.error('authAPI.socialLogin Error:', error)
       throw error
     }
   },

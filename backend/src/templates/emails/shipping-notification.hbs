@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Siparişin Kargoda</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+        .header {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 32px;
+        }
+        .truck-animation {
+            text-align: center;
+            font-size: 100px;
+            margin: 30px 0;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .tracking-box {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin: 30px 0;
+            color: #ffffff;
+        }
+        .tracking-number {
+            background-color: #ffffff;
+            color: #3b82f6;
+            font-size: 24px;
+            font-weight: bold;
+            padding: 15px 30px;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 15px 0;
+            letter-spacing: 1px;
+        }
+        .timeline {
+            margin: 30px 0;
+        }
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-left: 3px solid #e5e7eb;
+            margin-left: 20px;
+            position: relative;
+        }
+        .timeline-item.active {
+            border-left-color: #3b82f6;
+        }
+        .timeline-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: #e5e7eb;
+            position: absolute;
+            left: -9px;
+        }
+        .timeline-item.active .timeline-dot {
+            background-color: #3b82f6;
+        }
+        .timeline-content {
+            margin-left: 20px;
+        }
+        .button {
+            display: inline-block;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .info-box {
+            background-color: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .footer {
+            background-color: #f9f9f9;
+            padding: 30px;
+            text-align: center;
+            color: #999999;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🚚 Siparişin Yolda!</h1>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <div class="truck-animation">🚛</div>
+            
+            <h2 style="text-align: center; color: #333333;">Merhaba {{name}}! 👋</h2>
+            <p style="text-align: center; font-size: 18px; color: #666666;">
+                Harika haber! Siparişin <strong>{{carrier}}</strong> ile kargoya verildi.
+            </p>
+
+            <!-- Tracking Box -->
+            <div class="tracking-box">
+                <p style="margin: 0; font-size: 18px;">Kargo Takip Numarası</p>
+                <div class="tracking-number">{{trackingNumber}}</div>
+                <p style="margin: 10px 0;">Sipariş No: #{{orderNumber}}</p>
+            </div>
+
+            <!-- Info Box -->
+            <div class="info-box">
+                <strong style="color: #1e40af;">📅 Tahmini Teslimat:</strong>
+                <p style="margin: 10px 0 0 0; color: #666666;">
+                    {{#if estimatedDelivery}}
+                        {{estimatedDelivery}}
+                    {{else}}
+                        2-3 iş günü içinde
+                    {{/if}}
+                </p>
+            </div>
+
+            <!-- Timeline -->
+            <div class="timeline">
+                <h3 style="color: #333333; margin-bottom: 20px;">Kargo Durumu:</h3>
+                
+                <div class="timeline-item active">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <strong style="color: #3b82f6;">✓ Sipariş Alındı</strong>
+                        <p style="color: #999999; font-size: 14px; margin: 5px 0 0 0;">Sipariş başarıyla oluşturuldu</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item active">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <strong style="color: #3b82f6;">✓ Hazırlandı</strong>
+                        <p style="color: #999999; font-size: 14px; margin: 5px 0 0 0;">Ürünler paketlendi</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item active">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <strong style="color: #3b82f6;">✓ Kargoya Verildi</strong>
+                        <p style="color: #999999; font-size: 14px; margin: 5px 0 0 0;">Kargo şirketine teslim edildi</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <strong style="color: #666666;">⏳ Dağıtımda</strong>
+                        <p style="color: #999999; font-size: 14px; margin: 5px 0 0 0;">Kurye adresine yöneldi</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <strong style="color: #666666;">📦 Teslim Edildi</strong>
+                        <p style="color: #999999; font-size: 14px; margin: 5px 0 0 0;">Kargo teslim alındı</p>
+                    </div>
+                </div>
+            </div>
+
+            <p style="text-align: center;">
+                <a href="{{trackingUrl}}" class="button">Kargoyu Takip Et</a>
+            </p>
+
+            <p style="color: #666666; text-align: center;">
+                Kargo ile ilgili tüm güncellemeleri takip sayfasından anlık olarak görebilirsin.
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Kargo ile ilgili sorun mu yaşıyorsun?</p>
+            <p><a href="mailto:destek@myshop.com" style="color: #3b82f6;">destek@myshop.com</a></p>
+            <p>© 2026 MyShop. Tüm hakları saklıdır.</p>
+        </div>
+    </div>
+</body>
+</html>

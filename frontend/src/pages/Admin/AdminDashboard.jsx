@@ -1,7 +1,7 @@
 import { Routes, Route, Link, useLocation } from 'react-router-dom'
 import { 
   LayoutDashboard, Package, ShoppingCart, Users, 
-  Settings, LogOut, BarChart3 
+  Settings, LogOut, BarChart3, Award, Activity 
 } from 'lucide-react'
 import useAuthStore from '../../store/authStore'
 import Navbar from '../../components/layout/Navbar'
@@ -89,9 +89,8 @@ function DashboardHome({ user }) {
       <p className="text-gray-600 dark:text-gray-400 mb-6">
         Hoş geldiniz! Soldaki menüden istediğiniz bölüme geçebilirsiniz.
       </p>
-      
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <div className="bg-white dark:bg-dark-card p-6 rounded-lg shadow">
           <div className="text-gray-500 dark:text-gray-400 text-sm">Toplam Satış</div>
           <div className="text-3xl font-bold mt-2 dark:text-dark-text">₺0</div>
@@ -108,6 +107,33 @@ function DashboardHome({ user }) {
           <div className="text-gray-500 dark:text-gray-400 text-sm">Toplam Kullanıcı</div>
           <div className="text-3xl font-bold mt-2 dark:text-dark-text">0</div>
         </div>
+      </div>
+      {/* New Widgets */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Link
+          to="/admin/analytics/comprehensive"
+          className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 text-white hover:shadow-2xl transition"
+        >
+          <Activity size={40} className="mb-4" />
+          <h3 className="text-2xl font-bold mb-2">Analytics Dashboard</h3>
+          <p className="opacity-90">Comprehensive business intelligence</p>
+        </Link>
+        <Link
+          to="/admin/bundles"
+          className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-6 text-white hover:shadow-2xl transition"
+        >
+          <Package size={40} className="mb-4" />
+          <h3 className="text-2xl font-bold mb-2">Bundle Manager</h3>
+          <p className="opacity-90">Manage product bundles</p>
+        </Link>
+        <Link
+          to="/admin/loyalty/stats"
+          className="bg-gradient-to-r from-yellow-600 to-orange-600 rounded-2xl p-6 text-white hover:shadow-2xl transition"
+        >
+          <Award size={40} className="mb-4" />
+          <h3 className="text-2xl font-bold mb-2">Loyalty Stats</h3>
+          <p className="opacity-90">Program performance</p>
+        </Link>
       </div>
     </div>
   )

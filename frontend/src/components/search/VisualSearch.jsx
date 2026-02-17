@@ -63,7 +63,7 @@ function VisualSearch({ isOpen, onClose }) {
   }
 
   const handleProductClick = (productId) => {
-    navigate(`/product/${productId}`)
+    navigate(`/products/${productId}`)
     onClose()
   }
 
@@ -200,7 +200,7 @@ function VisualSearch({ isOpen, onClose }) {
                           >
                             <div className="rounded-lg overflow-hidden bg-gray-100 dark:bg-dark-hover h-48 mb-2">
                               <img
-                                src={product.image || 'https://via.placeholder.com/200'}
+                                src={product.images?.[0] || 'https://via.placeholder.com/200'}
                                 alt={product.name}
                                 className="w-full h-full object-cover group-hover:scale-110 transition-transform"
                               />

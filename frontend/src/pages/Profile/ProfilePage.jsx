@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useMetaDescription, metaDescriptions } from '../../utils/metaDescriptions'
 import { User, Mail, Phone, Lock, Camera, MapPin, Package, Heart, Gift, Zap } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Navbar from '../../components/layout/Navbar'
@@ -7,6 +8,8 @@ import BottomNav from '../../components/layout/BottomNav'
 import useAuthStore from '../../store/authStore'
 
 function ProfilePage() {
+  // Set optimized meta description for SEO
+  useMetaDescription(metaDescriptions.profile.description, metaDescriptions.profile.title)
   const { user, updateProfile, changePassword } = useAuthStore()
   
   const [activeTab, setActiveTab] = useState('profile')

@@ -18,7 +18,7 @@ function ComparisonFloatingButton() {
       id: product._id,
       name: product.name,
       price: product.price,
-      image: product.image,
+      image: product.images?.[0],
       quantity: 1
     })
     alert('Ürün sepete eklendi!')
@@ -40,7 +40,7 @@ function ComparisonFloatingButton() {
         onClick={() => setIsOpen(true)}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
-        className="fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full shadow-lg flex items-center justify-center font-bold text-lg hover:shadow-xl transition z-40"
+        className="fixed bottom-8 left-8 w-14 h-14 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full shadow-lg flex items-center justify-center font-bold text-lg hover:shadow-xl transition z-50"
       >
         {items.length}
       </motion.button>
@@ -54,7 +54,7 @@ function ComparisonFloatingButton() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="fixed inset-0 bg-black/50 z-50"
+              className="fixed inset-0 bg-black/50 z-40"
             />
 
             <motion.div
@@ -90,11 +90,11 @@ function ComparisonFloatingButton() {
                           <td key={product._id} className="py-4 px-4 min-w-[200px]">
                             <div className="text-center">
                               <img
-                                src={product.image || 'https://via.placeholder.com/150'}
+                                src={product.images?.[0] || '/default-product-image.svg'}
                                 alt={product.name}
                                 className="w-32 h-32 object-cover rounded-lg mb-2 mx-auto cursor-pointer hover:scale-110 transition"
                                 onClick={() => {
-                                  navigate(`/product/${product._id}`)
+                                  navigate(`/products/${product._id}`)
                                   setIsOpen(false)
                                 }}
                               />

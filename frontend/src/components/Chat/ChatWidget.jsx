@@ -1,10 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { MessageCircle, X, Send, Minimize2, Bot, Trash2 } from 'lucide-react'
-import useAuthStore from '../../store/authStore'
 import API from '../../api/axiosConfig'
 
 function ChatWidget() {
-  const { isAuthenticated, user } = useAuthStore()
   const [isOpen, setIsOpen] = useState(false)
   const [isMinimized, setIsMinimized] = useState(false)
   const [messages, setMessages] = useState([])
@@ -15,32 +13,31 @@ function ChatWidget() {
   const [error, setError] = useState(null)
   const messagesEndRef = useRef(null)
 
-  // Chat başlat
+  // Chat başlat (Kimlik doğrulama gerektirmez)
   const startNewChat = async () => {
     try {
       setLoading(true)
       setError(null)
-      console.log('Starting new chat...')
-      const response = await API.post('/api/chat/start')
-      console.log('Chat started:', response.data)
-      setChatId(response.data.chat._id)
+      console.log('Starting new guest chat...')
+      // Local chat ID oluştur - backend isteği gerekmez
+      setChatId('guest-' + Date.now())
       
       // Hoş geldin mesajını ekle
       const welcomeMsg = {
         id: Date.now(),
         sender: 'bot',
-        message: `Merhaba ${user?.name || 'Değerli Müşterimiz'}! 👋\n\nSize nasıl yardımcı olabilirim?\n\n• Sipariş takibi\n• Kargo bilgisi\n• İade süreci\n• Ödeme seçenekleri\n• İndirim kampanyaları`,
+        message: `Merhaba! 👋\n\nSize nasıl yardımcı olabilirim?\n\n• Sipariş takibi\n• Kargo bilgisi\n• İade süreci\n• Ödeme seçenekleri\n• İndirim kampanyaları`,
         timestamp: new Date()
       }
       setMessages([welcomeMsg])
     } catch (err) {
-      console.error('Start chat error:', err.response?.data || err.message)
-      // Backend hatası - fallback olarak local bot kullan
-      setChatId('local-' + Date.now())
+      console.error('Start chat error:', err.message)
+      // Fallback olarak local bot kullan
+      setChatId('guest-' + Date.now())
       const welcomeMsg = {
         id: Date.now(),
         sender: 'bot',
-        message: `Merhaba ${user?.name || 'Değerli Müşterimiz'}! 👋\n\nSize nasıl yardımcı olabilirim?\n\n• Sipariş takibi\n• Kargo bilgisi\n• İade süreci\n• Ödeme seçenekleri\n• İndirim kampanyaları`,
+        message: `Merhaba! 👋\n\nSize nasıl yardımcı olabilirim?\n\n• Sipariş takibi\n• Kargo bilgisi\n• İade süreci\n• Ödeme seçenekleri\n• İndirim kampanyaları`,
         timestamp: new Date()
       }
       setMessages([welcomeMsg])
@@ -52,10 +49,10 @@ function ChatWidget() {
 
   // Chat açıldığında
   useEffect(() => {
-    if (isOpen && !chatId && isAuthenticated) {
+    if (isOpen && !chatId) {
       startNewChat()
     }
-  }, [isOpen, isAuthenticated, chatId])
+  }, [isOpen, chatId])
 
   // Fallback Bot cevapları
   const getBotFallbackResponse = (userMessage) => {
@@ -169,7 +166,7 @@ function ChatWidget() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
-  // Mesaj gönder
+  // Mesaj gönder (Backend isteği gerekmez - lokal bot cevabı kullan)
   const handleSend = async (e) => {
     e.preventDefault()
 
@@ -197,44 +194,39 @@ function ChatWidget() {
     setError(null)
 
     try {
-      console.log('Sending message:', { chatId, message: messageText })
-      const response = await API.post('/api/chat/message', {
-        chatId,
-        message: messageText
-      })
-
-      console.log('Bot response:', response.data)
-      // Bot yanıtını ekle
-      if (response.data.botMessage) {
-        setMessages(prev => [...prev, response.data.botMessage])
-      }
-    } catch (err) {
-      console.error('Send message error:', err.response?.data || err.message)
-      // Fallback olarak lokal bot cevabı kullan
+      // Lokal bot cevabı kullan (kimlik doğrulama gerektirmez)
+      const botResponseText = getBotFallbackResponse(messageText)
       const botMsg = {
-        id: Date.now().toString(),
+        id: (Date.now() + 1).toString(),
+        sender: 'bot',
+        message: botResponseText,
+        timestamp: new Date()
+      }
+      
+      // Typing effect
+      setTimeout(() => {
+        setMessages(prev => [...prev, botMsg])
+        setIsTyping(false)
+      }, 800)
+    } catch (err) {
+      console.error('Error generating bot response:', err.message)
+      const botMsg = {
+        id: (Date.now() + 1).toString(),
         sender: 'bot',
         message: getBotFallbackResponse(messageText),
         timestamp: new Date()
       }
       setMessages(prev => [...prev, botMsg])
-    } finally {
       setIsTyping(false)
     }
   }
 
   // Chat temizle
-  const clearChat = async () => {
+  const clearChat = () => {
     if (window.confirm('Sohbeti silmek istediğinize emin misiniz?')) {
-      try {
-        await API.delete(`/api/chat/${chatId}`)
-        setMessages([])
-        setChatId(null)
-        startNewChat()
-      } catch (err) {
-        setError('Sohbet silinemedi')
-        console.error('Delete chat error:', err.response?.data || err.message)
-      }
+      setMessages([])
+      setChatId(null)
+      startNewChat()
     }
   }
 

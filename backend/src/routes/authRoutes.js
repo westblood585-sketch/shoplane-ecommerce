@@ -4,20 +4,18 @@ const {
   register,
   login,
   logout,
-  googleLogin,
-  socialLogin,
   getMe,
   updateProfile,
   changePassword,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  socialLogin
 } = require('../controllers/authController')
 const { protect } = require('../middleware/auth')
 
 // Public routes
 router.post('/register', register)
 router.post('/login', login)
-router.post('/google-login', googleLogin)
 router.post('/social-login', socialLogin)
 router.post('/forgot-password', forgotPassword)
 router.put('/reset-password/:resetToken', resetPassword)
