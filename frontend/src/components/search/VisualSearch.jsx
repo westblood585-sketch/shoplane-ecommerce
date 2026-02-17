@@ -200,7 +200,7 @@ function VisualSearch({ isOpen, onClose }) {
                           >
                             <div className="rounded-lg overflow-hidden bg-gray-100 dark:bg-dark-hover h-48 mb-2">
                               <img
-                                src={product.images?.[0] || 'https://via.placeholder.com/200'}
+                                src={product.images?.[0] || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect width="200" height="200" fill="%23e5e7eb"/%3E%3Ctext x="50%" y="50%" font-size="12" fill="%239ca3af" text-anchor="middle" dominant-baseline="middle" font-family="system-ui"%3ENo Image%3C/text%3E%3C/svg%3E'}
                                 alt={product.name}
                                 className="w-full h-full object-cover group-hover:scale-110 transition-transform"
                               />

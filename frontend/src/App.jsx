@@ -81,7 +81,8 @@ function App() {
     { name: 'Purchase', type: 'event', eventName: 'purchase', order: 4 }
   ]
 
-  const { trackEvent } = useFunnelTracking('6991a785fa6dd17fb9521714', ecommerceFunnelSteps)
+  const { trackEvent } = useFunnelTracking('', ecommerceFunnelSteps) // Disabled - funnel not found
+  // const funnelId = '6991a785fa6dd17fb9521714' // Set this if you have a funnel in the database
 
   // Expose trackEvent globally for cart and checkout
   window.trackFunnelEvent = trackEvent

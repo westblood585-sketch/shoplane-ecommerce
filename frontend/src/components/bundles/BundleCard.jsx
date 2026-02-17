@@ -23,7 +23,7 @@ function BundleCard({ bundle, index = 0 }) {
         >
             <div className="relative h-48 overflow-hidden">
                 <img
-                    src={bundle.image || (bundle.products?.[0]?.product?.images?.[0]) || 'https://via.placeholder.com/400'}
+                    src={bundle.image || (bundle.products?.[0]?.product?.images?.[0]) || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400"%3E%3Crect width="400" height="400" fill="%23e5e7eb"/%3E%3Ctext x="50%" y="50%" font-size="16" fill="%239ca3af" text-anchor="middle" dominant-baseline="middle" font-family="system-ui"%3ENo Image%3C/text%3E%3C/svg%3E'}
                     alt={bundle.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
