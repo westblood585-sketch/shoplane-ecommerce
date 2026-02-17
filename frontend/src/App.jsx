@@ -69,8 +69,10 @@ function App() {
   const { fetchFavorites } = useFavoriteStore()
   const { notifications, removeNotification, requestNotificationPermission } = useNotifications()
   
-  // Initialize analytics tracking
-  useAnalytics()
+  // Initialize analytics tracking (only if enabled)
+  if (import.meta.env.VITE_ENABLE_ANALYTICS === 'true') {
+    useAnalytics()
+  }
 
   // E-commerce funnel tracking
   const ecommerceFunnelSteps = [
